@@ -3,55 +3,72 @@ import Navigation from './components/havigation/Navigation.vue'
 </script>
 
 <template>
-  <div class="container">
-    <div class="main-title-start-screen">Pomodoro</div>
-    <div class="content">
+  <div class="layout">
+    <div class="header">
+      <div class="header__title">
+        Pomodoro
+      </div>
+    </div>
+    <div class="inner">
       <RouterView />
     </div>
-    <div class="header">
+    <div class="footer">
       <Navigation />
     </div>
   </div>
 </template>
 
 <style>
-    @import url('/src/assets/styles/main.css');
-  /* body, html {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-  }
+* {
+  margin: 0;
+  padding: 0;
+}
 
-  body {
-    font-family: sans-serif;
-  }
+html,
+body {
+  height: 100%;
+  background-color: #262626;
+  color: #E2DCCB;
+  font-family: "Inter", sans-serif;
+}
 
-  #app {
-    height: 100%;
-  } */
+#app {
+  min-height: 100%;
+  display: flex;
+}
+
+.container {
+  padding: 1rem;
+}
 </style>
 
 <style scoped>
-  .main-title-start-screen {
-    font-size: 24px;
-    font-weight: 500;
-    text-align: center;
-    margin-top: 70px;
-    color: #E2DCCB;
-  }
+.layout {
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
-  .header {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    height: 70px;
+.header {
+  position: sticky;
+  top: 0;
+}
 
-  }
+.inner {
+  flex-grow: 1;
+}
 
-  .main-title-start-screen {
-    position: fixed;
-    top: 0;
-    width: 100%;
-  }
+.header__title {
+  font-size: 24px;
+  font-weight: 500;
+  text-align: center;
+  color: #E2DCCB;
+  padding: 2rem;
+}
 
+.footer {
+  position: sticky;
+  bottom: 0;
+}
 </style>

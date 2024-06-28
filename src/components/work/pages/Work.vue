@@ -1,12 +1,12 @@
 <script setup lang="ts">
-    import RepeatButtonIcon from '../../../assets/img/repeat-button.svg'
-    import PauseButtonIcon from '../../../assets/img/pause-button.svg'
-    import StopSessionButtonIcon from '../../../assets/img/stop-button.svg'
+import RepeatButtonIcon from '../../../assets/img/repeat-button.svg'
+import PauseButtonIcon from '../../../assets/img/pause-button.svg'
+import StopSessionButtonIcon from '../../../assets/img/stop-button.svg'
 </script>
 
 
 <template>
-    <div class="session-block">
+    <div class="container session-block">
         <div class="block-timer">
             <div class="time-indicator">
                 <div class="date-of-work">12.01.2024</div>
@@ -40,18 +40,21 @@
 </template>
 
 <style scoped>
-    .session-block {
-        display: flex;
-        justify-content: center;
-        margin-top: 120px;
-    }
-    .block-timer {
-        
-        /* margin-top: 51px; */
-    }
-    .pause-button {
-        /* border: none;
+.session-block {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.block-timer {
+
+    /* margin-top: 51px; */
+}
+
+.pause-button {
+    /* border: none;
         cursor: pointer; */
-        background-color: #262626;
-    }
+    background-color: #262626;
+}
 </style>
