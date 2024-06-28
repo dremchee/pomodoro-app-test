@@ -19,15 +19,23 @@ import Navigation from './components/havigation/Navigation.vue'
 </template>
 
 <style>
+:root {
+  --color-primary: #FF4545;
+  --color-text: #E2DCCB;
+  --color-light: #3E3D3A;
+  --color-background: #262626;
+}
+
 * {
   margin: 0;
   padding: 0;
+  box-sizing: border-box;
 }
 
 html,
 body {
   height: 100%;
-  background-color: #262626;
+  background-color: var(--color-background);
   color: #E2DCCB;
   font-family: "Inter", sans-serif;
 }
@@ -63,7 +71,6 @@ body {
   font-size: 24px;
   font-weight: 500;
   text-align: center;
-  color: #E2DCCB;
   padding: 2rem;
 }
 
