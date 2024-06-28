@@ -36,7 +36,7 @@ html,
 body {
   height: 100%;
   background-color: var(--color-background);
-  color: #E2DCCB;
+  color: var(--color-text);
   font-family: "Inter", sans-serif;
 }
 
