@@ -18,7 +18,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #FF4545;
+  background-color: var(--color-primary);
   min-height: 68px;
   width: 268px;
   border: none;
@@ -34,6 +34,6 @@
 .text-button {
   font-weight: 500;
   font-size: 24px;
-  color: #262626;
+  color: var(--color-background);
 }
 </style>
