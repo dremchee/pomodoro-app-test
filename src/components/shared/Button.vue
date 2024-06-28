@@ -1,6 +1,15 @@
+<script setup lang="ts">
+  
+</script>
+
 <template>
-  <button class="button">
-    <slot />
+  <button class="button" >
+    <div class="icon-button">
+      <slot name="icon" />
+    </div>
+    <div class="text-button">
+      <slot />
+    </div>
   </button>
 </template>
 
@@ -9,13 +18,23 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    text-align: center;
-    background-color: green;
-    color: white;
+    background-color: #FF4545;
+    min-height: 68px;
+    width: 268px;
     border: none;
-    border-radius: 8px;
-    min-height: 2rem;
+    outline: none;
+    border-radius: 16px;
     cursor: pointer;
-    gap: 1rem;
+    margin-top: 280px;
+  }
+
+  .icon-button {
+    margin-right: 24px;
+  }
+
+  .text-button {
+    font-weight: 500;
+    font-size: 24px;
+    color: #262626;
   }
 </style>
