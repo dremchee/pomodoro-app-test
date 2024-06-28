@@ -9,10 +9,10 @@ import CustomisationButtonIcon from '../../assets/img/customisation-button.svg'
     <RouterLink to="/" class="navigation-link">
       <HouseButtonIcon></HouseButtonIcon>
     </RouterLink>
-    <RouterLink to="/stats">
+    <RouterLink to="/stats" class="navigation-link">
       <StattisticsButtonIcon />
     </RouterLink>
-    <RouterLink to="/settings">
+    <RouterLink to="/settings" class="navigation-link">
       <CustomisationButtonIcon />
     </RouterLink>
   </nav>
@@ -23,14 +23,23 @@ import CustomisationButtonIcon from '../../assets/img/customisation-button.svg'
   display: flex;
   width: 100%;
   align-items: center;
-  justify-content: center;
+  justify-content: space-around;
   border-top: 1px solid var(--color-light);
   min-height: 78px;
-  gap: 0 104px;
+  height: 100%;
   color: var(--color-text);
 }
 
 .navigation-link {
-  color: var(--color-text);
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--color-light);
+
+  &.router-link-exact-active {
+    color: var(--color-text);
+  }
 }
 </style>
