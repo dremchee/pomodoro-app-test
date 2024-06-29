@@ -8,15 +8,15 @@ import StopSessionButtonIcon from '../../../assets/img/stop-button.svg'
 <template>
     <div class="container work">
         <div class="work-content">
-            <div class="block-timer">
+            <div class="timer-container">
                 <div class="time-indicator">
                     <div class="date-of-work">12.01.2024</div>
                     <div class="expiration-time">15:59</div>
                     <div class="status">Work</div>
                 </div>
             </div>
-            <div class="report-block">
-                <div class="report-circle-block">
+            <div class="report-container">
+                <div class="report-circle-container">
                     <div class="report-circle"></div>
                     <div class="report-circle"></div>
                     <div class="report-circle"></div>
@@ -51,6 +51,72 @@ import StopSessionButtonIcon from '../../../assets/img/stop-button.svg'
 
 .work-content {
     flex-grow: 1;
+}
+
+.time-indicator {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+}
+
+.timer-container {
+    display: flex;
+    justify-content: center;
+    align-items: start;
+    height: 80%;
+}
+
+
+.time-indicator {
+    border: 8px solid var(--color-light);
+    border-radius: 50%;
+    width: 19rem;
+    height: 19rem;
+}
+
+.date-of-work {
+    font-weight: 300;
+    font-size: 1rem
+}
+
+.expiration-time {
+    font-size: 5.25rem;
+    font-weight: 500;
+}
+
+.status {
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.report-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+    height: 20%;
+}
+
+.report-circle-container {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    gap: 1.5rem;
+}
+
+.report-circle {
+    width: 1.25rem;
+    height: 1.25rem;
+    background-color: var(--color-light);
+    border-radius: 50%;
+}
+
+.report-text-info {
+    font-size: 16px;
+    color: var(--color-light);
 }
 
 .work-action {

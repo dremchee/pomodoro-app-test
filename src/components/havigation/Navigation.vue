@@ -25,7 +25,7 @@ import CustomisationButtonIcon from '../../assets/img/customisation-button.svg'
   align-items: center;
   justify-content: space-around;
   border-top: 1px solid var(--color-light);
-  min-height: 78px;
+  min-height: 65px;
   height: 100%;
   color: var(--color-text);
 }
