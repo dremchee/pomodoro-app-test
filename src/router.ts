@@ -4,22 +4,26 @@ const routes = [
   {
     path: '/',
     name: 'home',
-    component: () => import('./components/home/pages/Home.vue')
+    component: () => import('./components/home/pages/Home.vue'),
+    meta: { title: 'Pomodoro' },
   },
   {
     path: '/stats',
     name: 'stats',
-    component: () => import('./components/stats/pages/Stats.vue')
+    component: () => import('./components/stats/pages/Stats.vue'),
+    meta: { title: 'Statistics' },
   },
   {
     path: '/settings',
     name: 'settings',
-    component: () => import('./components/settings/pages/Settings.vue')
+    component: () => import('./components/settings/pages/Settings.vue'),
+    meta: { title: 'Settings' },
   },
   {
     path: '/work',
     name: 'work',
-    component: () => import('./components/work/pages/Work.vue')
+    component: () => import('./components/work/pages/Work.vue'),
+    meta: { title: 'Pomodoro' },
   },
 ]
 

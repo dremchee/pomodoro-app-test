@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import Navigation from './components/havigation/Navigation.vue'
+  import Navigation from './components/havigation/Navigation.vue'
 </script>
 
 <template>
   <div class="layout">
     <div class="header">
       <div class="header__title">
-        Pomodoro
+        {{ $route.meta.title }}
       </div>
     </div>
     <div class="inner">
