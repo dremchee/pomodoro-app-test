@@ -61,10 +61,13 @@ body {
 .header {
   position: sticky;
   top: 0;
+  background-color: var(--color-background);
+  z-index: 1000;
 }
 
 .inner {
   flex-grow: 1;
+  overflow-y: auto;
 }
 
 .header__title {
@@ -77,5 +80,7 @@ body {
 .footer {
   position: sticky;
   bottom: 0;
+  background-color: var(--color-background);
+  z-index: 1000;
 }
 </style>
