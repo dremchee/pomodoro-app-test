@@ -49,7 +49,7 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
 
     <div class="setting-parameters-el el-without-border-bottom">
       <div class="title-el height-title-el-with-circuit">Rounds</div>
-      <div class="configuring-internal-parameters">
+      <div class="configuring-internal-parameters indent-configuring-internal-parameters">
         <div class="configuring-internal-parameters-button">
           <MinusButtonIcon></MinusButtonIcon>
         </div>
@@ -58,7 +58,7 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
           <PlusButtonIcon></PlusButtonIcon>
         </div>
       </div>
-      <div class="rounds-circle-container">
+      <div class="rounds-circle-container indent-circle-container">
         <div class="rounds-circle-container-el"></div>
         <div class="rounds-circle-container-el"></div>
         <div class="rounds-circle-container-el"></div>
@@ -85,6 +85,10 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
     flex-direction: column;
     align-items: center;
     justify-content: center;
+  }
+
+  .indent-configuring-internal-parameters {
+    margin-top: 0.5rem;
   }
 
   .configuring-internal-parameters {
@@ -120,7 +124,7 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
   .height-title-el-with-circuit {
     display: flex;
     align-items: end;
-    height: 35%;
+    margin-top: 1rem;
   }
 
   .rounds-circle-container {
@@ -133,7 +137,7 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
     margin: 0 auto;
     column-gap: 12px;
     row-gap: 7px;
-    height: 35%;
+    height: 43%;
     align-items: start;
   }
 
@@ -142,5 +146,9 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
     height: 10px;
     background-color: var(--color-text);
     border-radius: 50%;
+  }
+
+  .indent-circle-container {
+    margin-top: 1rem; 
   }
 </style>
