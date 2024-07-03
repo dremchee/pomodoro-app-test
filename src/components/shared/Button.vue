@@ -25,15 +25,16 @@
   outline: none;
   border-radius: 16px;
   cursor: pointer;
+  color: var(--color-background);
 }
 
 .icon-button {
   margin-right: 24px;
+  color: inherit;
 }
 
 .text-button {
   font-weight: 500;
   font-size: 24px;
-  color: var(--color-background);
 }
 </style>

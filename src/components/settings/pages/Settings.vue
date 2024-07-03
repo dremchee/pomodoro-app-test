@@ -1,10 +1,34 @@
 <script setup lang="ts">
 import PlusButtonIcon from '../../../assets/img/plus-icon.svg'
 import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
+
+import SettingsFormGroup from '../components/SettingsFormGroup.vue'
 </script>
 
 <template>
-  <div class="container work">
+  <div class="container setting">
+    <div class="setting-parameters-el">
+      <SettingsFormGroup label="Label" test="Some text">
+        <template #label>Label</template>
+
+        <template #default>
+          <div class="configuring-internal-parameters">
+            <div class="configuring-internal-parameters-button">
+              <MinusButtonIcon></MinusButtonIcon>
+            </div>
+            <div class="configuring-internal-parameters-text">25:00</div>
+            <div class="configuring-internal-parameters-button">
+              <PlusButtonIcon></PlusButtonIcon>
+            </div>
+          </div>
+        </template>
+
+        <template #units>
+          min
+        </template>
+      </SettingsFormGroup>
+    </div>
+
     <div class="setting-parameters-el">
       <div class="title-el">Work</div>
       <div class="configuring-internal-parameters">
@@ -47,7 +71,8 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
       <div class="unit-time-text">min</div>
     </div>
 
-    <div class="setting-parameters-el el-without-border-bottom">
+    <div class="setting-parameters-el">
+
       <div class="title-el height-title-el-with-circuit">Rounds</div>
       <div class="configuring-internal-parameters indent-configuring-internal-parameters">
         <div class="configuring-internal-parameters-button">
@@ -71,84 +96,88 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
 </template>
 
 <style>
-  .work {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-  }
+.setting {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
 
-  .setting-parameters-el {
-    height: 8.125rem;
-    border-bottom: 1px solid var(--color-light);
-    width: 100%;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-  }
+.setting-parameters-el {
+  padding: 2.5rem 0;
+  border-bottom: 1px solid var(--color-light);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
 
-  .indent-configuring-internal-parameters {
-    margin-top: 0.5rem;
-  }
+.setting-parameters-el:last-child {
+  border-bottom: none;
+}
 
-  .configuring-internal-parameters {
-    display: flex;
-    flex-direction: row;
-    justify-content: space-between;
-    min-width: 208px;
-    height: 45%;
-    align-items: center;
-  }
+.indent-configuring-internal-parameters {
+  margin-top: 0.5rem;
+}
 
-  .configuring-internal-parameters-button {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    border: 1px solid var(--color-light);
-    cursor: pointer;
-    width: 2rem;
-    height: 2rem;
-    border-radius: 4px;
-    background-color: var(--color-background);
-  }
+.configuring-internal-parameters {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  min-width: 208px;
+  height: 45%;
+  align-items: center;
+}
 
-  .configuring-internal-parameters-text {
-    font-size: 2rem;
-    font-weight: 500;
-  }
+.configuring-internal-parameters-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 1px solid var(--color-light);
+  cursor: pointer;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 4px;
+  background-color: var(--color-background);
+}
 
-  .el-without-border-bottom {
-    border-bottom: none;
-  }
+.configuring-internal-parameters-text {
+  font-size: 2rem;
+  font-weight: 500;
+}
 
-  .height-title-el-with-circuit {
-    display: flex;
-    align-items: end;
-    margin-top: 1rem;
-  }
+.el-without-border-bottom {
+  border-bottom: none;
+}
 
-  .rounds-circle-container {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    flex-wrap: wrap;
-    max-width: 120px;
-    width: 100%;
-    margin: 0 auto;
-    column-gap: 12px;
-    row-gap: 7px;
-    height: 43%;
-    align-items: start;
-  }
+.height-title-el-with-circuit {
+  display: flex;
+  align-items: end;
+  margin-top: 1rem;
+}
 
-  .rounds-circle-container-el {
-    width: 10px;
-    height: 10px;
-    background-color: var(--color-text);
-    border-radius: 50%;
-  }
+.rounds-circle-container {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  flex-wrap: wrap;
+  max-width: 120px;
+  width: 100%;
+  margin: 0 auto;
+  column-gap: 12px;
+  row-gap: 7px;
+  height: 43%;
+  align-items: start;
+}
 
-  .indent-circle-container {
-    margin-top: 1rem; 
-  }
+.rounds-circle-container-el {
+  width: 10px;
+  height: 10px;
+  background-color: var(--color-text);
+  border-radius: 50%;
+}
+
+.indent-circle-container {
+  margin-top: 1rem;
+}
 </style>
