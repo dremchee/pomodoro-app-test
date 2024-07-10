@@ -2,14 +2,30 @@
 import PlusButtonIcon from '../../../assets/img/plus-icon.svg'
 import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
 
-import SettingsFormGroup from '../components/SettingsFormGroup.vue'
+import SettingsFromGroup from '../components/SettingsFromGroup.vue'
+import SettingFromRounds from '../components/SettingFromRounds.vue'
+
+const circles = [{
+  id: 1,
+}, {
+  id: 2,
+}, {
+  id: 3,
+}, {
+  id: 4,
+}, {
+  id: 5,
+}, {
+  id: 6,
+}, 
+]
 </script>
 
 <template>
   <div class="container setting">
     <div class="setting-parameters-el">
-      <SettingsFormGroup label="Label" test="Some text">
-        <template #label>Label</template>
+      <SettingsFromGroup label="Work" test="Some text">
+        <template #label>Work</template>
 
         <template #default>
           <div class="configuring-internal-parameters">
@@ -26,71 +42,73 @@ import SettingsFormGroup from '../components/SettingsFormGroup.vue'
         <template #units>
           min
         </template>
-      </SettingsFormGroup>
+      </SettingsFromGroup>
     </div>
 
     <div class="setting-parameters-el">
-      <div class="title-el">Work</div>
-      <div class="configuring-internal-parameters">
-        <div class="configuring-internal-parameters-button">
-          <MinusButtonIcon></MinusButtonIcon>
-        </div>
-        <div class="configuring-internal-parameters-text">25:00</div>
-        <div class="configuring-internal-parameters-button">
-          <PlusButtonIcon></PlusButtonIcon>
-        </div>
-      </div>
-      <div class="unit-time-text">min</div>
+      <SettingsFromGroup label="Short break" test="Some text">
+        <template #label>Short break</template>
+
+        <template #default>
+          <div class="configuring-internal-parameters">
+            <div class="configuring-internal-parameters-button">
+              <MinusButtonIcon></MinusButtonIcon>
+            </div>
+            <div class="configuring-internal-parameters-text">5:00</div>
+            <div class="configuring-internal-parameters-button">
+              <PlusButtonIcon></PlusButtonIcon>
+            </div>
+          </div>
+        </template>
+
+        <template #units>
+          min
+        </template>
+      </SettingsFromGroup>
     </div>
 
     <div class="setting-parameters-el">
-      <div class="title-el">Short break</div>
-      <div class="configuring-internal-parameters">
-        <div class="configuring-internal-parameters-button">
-          <MinusButtonIcon></MinusButtonIcon>
-        </div>
-        <div class="configuring-internal-parameters-text">5:00</div>
-        <div class="configuring-internal-parameters-button">
-          <PlusButtonIcon></PlusButtonIcon>
-        </div>
-      </div>
-      <div class="unit-time-text">min</div>
+      <SettingsFromGroup label="Long break" test="Some text">
+        <template #label>Long break</template>
+
+        <template #default>
+          <div class="configuring-internal-parameters">
+            <div class="configuring-internal-parameters-button">
+              <MinusButtonIcon></MinusButtonIcon>
+            </div>
+            <div class="configuring-internal-parameters-text">20:00</div>
+            <div class="configuring-internal-parameters-button">
+              <PlusButtonIcon></PlusButtonIcon>
+            </div>
+          </div>
+        </template>
+
+        <template #units>
+          min
+        </template>
+      </SettingsFromGroup>
     </div>
 
     <div class="setting-parameters-el">
-      <div class="title-el">Long break</div>
-      <div class="configuring-internal-parameters">
-        <div class="configuring-internal-parameters-button">
-          <MinusButtonIcon></MinusButtonIcon>
-        </div>
-        <div class="configuring-internal-parameters-text">20:00</div>
-        <div class="configuring-internal-parameters-button">
-          <PlusButtonIcon></PlusButtonIcon>
-        </div>
-      </div>
-      <div class="unit-time-text">min</div>
-    </div>
+      <SettingFromRounds title="Rounds" test="Some text">
+        <template #label>Label</template>
 
-    <div class="setting-parameters-el">
+        <template #default>
+          <div class="configuring-internal-parameters">
+            <div class="configuring-internal-parameters-button">
+              <MinusButtonIcon></MinusButtonIcon>
+            </div>
+            <div class="configuring-internal-parameters-text">6</div>
+            <div class="configuring-internal-parameters-button">
+              <PlusButtonIcon></PlusButtonIcon>
+            </div>
+          </div>
+        </template>
 
-      <div class="title-el height-title-el-with-circuit">Rounds</div>
-      <div class="configuring-internal-parameters indent-configuring-internal-parameters">
-        <div class="configuring-internal-parameters-button">
-          <MinusButtonIcon></MinusButtonIcon>
-        </div>
-        <div class="configuring-internal-parameters-text">6</div>
-        <div class="configuring-internal-parameters-button">
-          <PlusButtonIcon></PlusButtonIcon>
-        </div>
-      </div>
-      <div class="rounds-circle-container indent-circle-container">
-        <div class="rounds-circle-container-el"></div>
-        <div class="rounds-circle-container-el"></div>
-        <div class="rounds-circle-container-el"></div>
-        <div class="rounds-circle-container-el"></div>
-        <div class="rounds-circle-container-el"></div>
-        <div class="rounds-circle-container-el"></div>
-      </div>
+        <template #circles>
+          <div class="circles-el" v-for="circle in circles" :key="circle.id"></div>
+        </template>
+      </SettingFromRounds>
     </div>
   </div>
 </template>
@@ -146,38 +164,10 @@ import SettingsFormGroup from '../components/SettingsFormGroup.vue'
   font-weight: 500;
 }
 
-.el-without-border-bottom {
-  border-bottom: none;
-}
-
-.height-title-el-with-circuit {
-  display: flex;
-  align-items: end;
-  margin-top: 1rem;
-}
-
-.rounds-circle-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  flex-wrap: wrap;
-  max-width: 120px;
-  width: 100%;
-  margin: 0 auto;
-  column-gap: 12px;
-  row-gap: 7px;
-  height: 43%;
-  align-items: start;
-}
-
-.rounds-circle-container-el {
+.circles-el {
   width: 10px;
   height: 10px;
-  background-color: var(--color-text);
   border-radius: 50%;
-}
-
-.indent-circle-container {
-  margin-top: 1rem;
+  background-color: var(--color-text);
 }
 </style>
