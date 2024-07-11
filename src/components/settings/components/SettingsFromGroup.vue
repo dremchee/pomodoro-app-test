@@ -11,7 +11,7 @@ defineProps<{
     </div>
     <div class="settings-form-group__controls">
       <slot />
-    </div>
+    </div> 
     <div class="settings-form-group__units">
       <slot name="units" />
     </div>

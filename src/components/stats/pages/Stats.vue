@@ -2,6 +2,8 @@
 import DirectionLeftIcon from '../../../assets/img/direction-left-icon.svg'
 import DirectionRightIcon from '../../../assets/img/direction-right-icon.svg'
 
+import TwoIconButtons from '../../settings/components/ButtonControl.vue'
+
 const statsData = [{
   date: '12.01.2024',
   sessions: 12
@@ -27,17 +29,18 @@ const statsData = [{
 </script>
 
 <template>
-  <div class="container work">
-    <div class="change-month-and-year-conatiner">
-      <!-- TODO: Create a new component, for example: ButtonControl -->
-      <button class="month-and-year-switch arrow-button">
+  <div class="container stats">
+    <TwoIconButtons>
+      <template #icon1>
         <DirectionLeftIcon />
-      </button>
-      <div class="month-and-year-text">January 2024</div>
-      <button class="month-and-year-switch arrow-button">
+      </template> 
+      <template #info>
+        <div class="month-and-year-text">January 2024</div>
+      </template>
+      <template #icon2>
         <DirectionRightIcon />
-      </button>
-    </div>
+      </template>
+    </TwoIconButtons>
     <div class="graphical-analytics-container">
       <div class="graphical-analytics-el" v-for="_ in 30"></div>
     </div>
@@ -52,31 +55,11 @@ const statsData = [{
   </div>
 </template>
 
-<style>
-.work {
+<style scoped>
+.stats {
   display: flex;
   flex-direction: column;
   height: 100%;
-}
-
-.change-month-and-year-conatiner {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  align-items: center;
-  gap: 5.5rem;
-  height: 10%;
-}
-
-.month-and-year-switch {
-  border: 1px solid var(--color-light);
-  cursor: pointer;
-  color: var(--color-text);
-  width: 2rem;
-  height: 2rem;
-  border-radius: 4px;
-  background-color: var(--color-background);
-  flex-shrink: 0;
 }
 
 .month-and-year-text {

@@ -4,6 +4,7 @@ import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
 
 import SettingsFromGroup from '../components/SettingsFromGroup.vue'
 import SettingFromRounds from '../components/SettingFromRounds.vue'
+import TwoIconButtons from '../../settings/components/ButtonControl.vue'
 
 const circles = [{
   id: 1,
@@ -26,18 +27,17 @@ const circles = [{
     <div class="setting-parameters-el">
       <SettingsFromGroup label="Work" test="Some text">
         <template #label>Work</template>
-
-        <template #default>
-          <div class="configuring-internal-parameters">
-            <div class="configuring-internal-parameters-button">
-              <MinusButtonIcon></MinusButtonIcon>
-            </div>
+        <TwoIconButtons>
+          <template #icon1>
+            <MinusButtonIcon></MinusButtonIcon>
+          </template>
+          <template #info>
             <div class="configuring-internal-parameters-text">25:00</div>
-            <div class="configuring-internal-parameters-button">
-              <PlusButtonIcon></PlusButtonIcon>
-            </div>
-          </div>
-        </template>
+          </template>
+          <template #icon2>
+            <PlusButtonIcon></PlusButtonIcon>
+          </template>
+        </TwoIconButtons>
 
         <template #units>
           min
@@ -48,18 +48,17 @@ const circles = [{
     <div class="setting-parameters-el">
       <SettingsFromGroup label="Short break" test="Some text">
         <template #label>Short break</template>
-
-        <template #default>
-          <div class="configuring-internal-parameters">
-            <div class="configuring-internal-parameters-button">
-              <MinusButtonIcon></MinusButtonIcon>
-            </div>
+        <TwoIconButtons>
+          <template #icon1>
+            <MinusButtonIcon></MinusButtonIcon>
+          </template>
+          <template #info>
             <div class="configuring-internal-parameters-text">5:00</div>
-            <div class="configuring-internal-parameters-button">
-              <PlusButtonIcon></PlusButtonIcon>
-            </div>
-          </div>
-        </template>
+          </template>
+          <template #icon2>
+            <PlusButtonIcon></PlusButtonIcon>
+          </template>
+        </TwoIconButtons>
 
         <template #units>
           min
@@ -70,18 +69,17 @@ const circles = [{
     <div class="setting-parameters-el">
       <SettingsFromGroup label="Long break" test="Some text">
         <template #label>Long break</template>
-
-        <template #default>
-          <div class="configuring-internal-parameters">
-            <div class="configuring-internal-parameters-button">
-              <MinusButtonIcon></MinusButtonIcon>
-            </div>
+        <TwoIconButtons>
+          <template #icon1>
+            <MinusButtonIcon></MinusButtonIcon>
+          </template>
+          <template #info>
             <div class="configuring-internal-parameters-text">20:00</div>
-            <div class="configuring-internal-parameters-button">
-              <PlusButtonIcon></PlusButtonIcon>
-            </div>
-          </div>
-        </template>
+          </template>
+          <template #icon2>
+            <PlusButtonIcon></PlusButtonIcon>
+          </template>
+        </TwoIconButtons>
 
         <template #units>
           min
@@ -92,18 +90,17 @@ const circles = [{
     <div class="setting-parameters-el">
       <SettingFromRounds title="Rounds" test="Some text">
         <template #label>Label</template>
-
-        <template #default>
-          <div class="configuring-internal-parameters">
-            <div class="configuring-internal-parameters-button">
-              <MinusButtonIcon></MinusButtonIcon>
-            </div>
+        <TwoIconButtons>
+          <template #icon1>
+            <MinusButtonIcon></MinusButtonIcon>
+          </template>
+          <template #info>
             <div class="configuring-internal-parameters-text">6</div>
-            <div class="configuring-internal-parameters-button">
-              <PlusButtonIcon></PlusButtonIcon>
-            </div>
-          </div>
-        </template>
+          </template>
+          <template #icon2>
+            <PlusButtonIcon></PlusButtonIcon>
+          </template>
+        </TwoIconButtons>
 
         <template #circles>
           <div class="circles-el" v-for="circle in circles" :key="circle.id"></div>
@@ -113,7 +110,7 @@ const circles = [{
   </div>
 </template>
 
-<style>
+<style scoped>
 .setting {
   display: flex;
   flex-direction: column;
@@ -132,31 +129,6 @@ const circles = [{
 
 .setting-parameters-el:last-child {
   border-bottom: none;
-}
-
-.indent-configuring-internal-parameters {
-  margin-top: 0.5rem;
-}
-
-.configuring-internal-parameters {
-  display: flex;
-  flex-direction: row;
-  justify-content: space-between;
-  min-width: 208px;
-  height: 45%;
-  align-items: center;
-}
-
-.configuring-internal-parameters-button {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  border: 1px solid var(--color-light);
-  cursor: pointer;
-  width: 2rem;
-  height: 2rem;
-  border-radius: 4px;
-  background-color: var(--color-background);
 }
 
 .configuring-internal-parameters-text {
