@@ -35,20 +35,20 @@ const statsData = [{
         <DirectionLeftIcon />
       </template> 
       <template #info>
-        <div class="month-and-year-text">January 2024</div>
+        <div class="stats-month-text">January 2024</div>
       </template>
       <template #icon2>
         <DirectionRightIcon />
       </template>
     </TwoIconButtons>
-    <div class="graphical-analytics-container">
-      <div class="graphical-analytics-el" v-for="_ in 30"></div>
+    <div class="stats-graphic-container">
+      <div class="stats-graphic-el" v-for="_ in 30"></div>
     </div>
-    <div class="activity-statistics-container">
-      <div class="activity-statistics-el" v-for="item in statsData">
-        <div class="activity-statistics-el-date">{{ item.date }}</div>
-        <div class="activity-statistics-el-circle-container">
-          <div class="activity-statistics-el-circle" v-for="_ in item.sessions"></div>
+    <div class="stats-activity-container">
+      <div class="stats-activity-el" v-for="item in statsData">
+        <div class="stats-activity-el-date">{{ item.date }}</div>
+        <div class="stats-activity-el-circle-container">
+          <div class="stats-activity-el-circle" v-for="_ in item.sessions"></div>
         </div>
       </div>
     </div>
@@ -62,7 +62,7 @@ const statsData = [{
   height: 100%;
 }
 
-.month-and-year-text {
+.stats-month-text {
   font-weight: 500;
   font-size: 16px;
   white-space: nowrap;
@@ -70,7 +70,7 @@ const statsData = [{
   flex-grow: 1;
 }
 
-.graphical-analytics-container {
+.stats-graphic-container {
   display: flex;
   flex-direction: row;
   justify-content: flex-start;
@@ -82,13 +82,13 @@ const statsData = [{
   margin: 0 auto;
 }
 
-.graphical-analytics-el {
+.stats-graphic-el {
   width: 0.5rem;
   height: 11.25rem;
   background-color: var(--color-light);
 }
 
-.activity-statistics-container {
+.stats-activity-container {
   display: flex;
   align-items: space-between;
   justify-content: flex-start;
@@ -99,7 +99,7 @@ const statsData = [{
   padding-bottom: 0.01px;
 }
 
-.activity-statistics-el {
+.stats-activity-el {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
@@ -108,12 +108,12 @@ const statsData = [{
   border-bottom: 1px solid var(--color-light);
 }
 
-.activity-statistics-el-date {
+.stats-activity-el-date {
   font-weight: 500;
   font-size: 16px;
 }
 
-.activity-statistics-el-circle-container {
+.stats-activity-el-circle-container {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
@@ -124,7 +124,7 @@ const statsData = [{
   min-height: 40px;
 }
 
-.activity-statistics-el-circle {
+.stats-activity-el-circle {
   width: 10px;
   height: 10px;
   background-color: var(--color-light);

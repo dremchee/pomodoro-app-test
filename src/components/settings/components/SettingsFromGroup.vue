@@ -1,13 +1,13 @@
 <script lang="ts" setup>
 defineProps<{
-  label: string
+  title: string
 }>()
 </script>
 
 <template>
   <div class="settings-form-group">
     <div class="settings-form-group__label">
-      {{ label }}
+      {{ title }}
     </div>
     <div class="settings-form-group__controls">
       <slot />

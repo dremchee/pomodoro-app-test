@@ -6,33 +6,27 @@ import SettingsFromGroup from '../components/SettingsFromGroup.vue'
 import SettingFromRounds from '../components/SettingFromRounds.vue'
 import TwoIconButtons from '../../settings/components/ButtonControl.vue'
 
-const circles = [{
-  id: 1,
-}, {
-  id: 2,
-}, {
-  id: 3,
-}, {
-  id: 4,
-}, {
-  id: 5,
-}, {
-  id: 6,
-}, 
+const circles = [
+  {id: 1},
+  {id: 2},
+  {id: 3},
+  {id: 4},
+  {id: 5},
+  {id: 6}, 
 ]
 </script>
 
 <template>
   <div class="container setting">
     <div class="setting-parameters-el">
-      <SettingsFromGroup label="Work" test="Some text">
+      <SettingsFromGroup title="Work" test="Some text">
         <template #label>Work</template>
         <TwoIconButtons>
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="configuring-internal-parameters-text">25:00</div>
+            <div class="setting-internal-parameters-text">25:00</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
@@ -46,14 +40,14 @@ const circles = [{
     </div>
 
     <div class="setting-parameters-el">
-      <SettingsFromGroup label="Short break" test="Some text">
+      <SettingsFromGroup title="Short break" test="Some text">
         <template #label>Short break</template>
         <TwoIconButtons>
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="configuring-internal-parameters-text">5:00</div>
+            <div class="setting-internal-parameters-text">5:00</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
@@ -67,14 +61,14 @@ const circles = [{
     </div>
 
     <div class="setting-parameters-el">
-      <SettingsFromGroup label="Long break" test="Some text">
+      <SettingsFromGroup title="Long break" test="Some text">
         <template #label>Long break</template>
         <TwoIconButtons>
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="configuring-internal-parameters-text">20:00</div>
+            <div class="setting-internal-parameters-text">20:00</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
@@ -95,7 +89,7 @@ const circles = [{
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="configuring-internal-parameters-text">6</div>
+            <div class="setting-internal-parameters-text">6</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
@@ -131,7 +125,7 @@ const circles = [{
   border-bottom: none;
 }
 
-.configuring-internal-parameters-text {
+.setting-internal-parameters-text {
   font-size: 2rem;
   font-weight: 500;
 }

@@ -12,11 +12,11 @@ import TimeIndicator from "../components/TimeIndicator.vue";
       <div class="work-timer-container">
         <TimeIndicator />
       </div>
-      <div class="report-container">
-        <div class="report-circle-container">
-          <div class="report-circle" v-for="_ in 6"></div>
+      <div class="work-report-container">
+        <div class="work-report-circle-container">
+          <div class="work-report-circle" v-for="_ in 6"></div>
         </div>
-        <div class="report-text-info">2 of 6 sessions</div>
+        <div class="work-report-text-info">2 of 6 sessions</div>
       </div>
     </div>
     <div class="work-action">
@@ -52,7 +52,7 @@ import TimeIndicator from "../components/TimeIndicator.vue";
   height: 80%;
 }
 
-.report-container {
+.work-report-container {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -61,21 +61,21 @@ import TimeIndicator from "../components/TimeIndicator.vue";
   height: 20%;
 }
 
-.report-circle-container {
+.work-report-circle-container {
   display: flex;
   flex-direction: row;
   justify-content: center;
   gap: 1.5rem;
 }
 
-.report-circle {
+.work-report-circle {
   width: 1.25rem;
   height: 1.25rem;
   background-color: var(--color-light);
   border-radius: 50%;
 }
 
-.report-text-info {
+.work-report-text-info {
   font-size: 16px;
   color: var(--color-light);
 }
