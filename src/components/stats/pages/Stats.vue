@@ -2,7 +2,7 @@
 import DirectionLeftIcon from '../../../assets/img/direction-left-icon.svg'
 import DirectionRightIcon from '../../../assets/img/direction-right-icon.svg'
 
-import TwoIconButtons from '../../settings/components/ButtonControl.vue'
+import TwoIconButtonsFromStats from '../../../components/settings/components/ButtonControlFromStats.vue'
 
 const statsData = [{
   date: '12.01.2024',
@@ -30,7 +30,7 @@ const statsData = [{
 
 <template>
   <div class="container stats">
-    <TwoIconButtons>
+    <TwoIconButtonsFromStats>
       <template #icon1>
         <DirectionLeftIcon />
       </template> 
@@ -40,7 +40,7 @@ const statsData = [{
       <template #icon2>
         <DirectionRightIcon />
       </template>
-    </TwoIconButtons>
+    </TwoIconButtonsFromStats>
     <div class="stats-graphic-container">
       <div class="stats-graphic-el" v-for="_ in 30"></div>
     </div>

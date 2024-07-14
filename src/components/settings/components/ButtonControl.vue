@@ -1,20 +1,35 @@
 <script lang="ts" setup>
-const button1Clicked = () => {
-  console.log('Button 1 clicked')
+import { defineProps, defineEmits, computed } from 'vue';
+
+const props = defineProps<{
+  timeInSeconds: number
+}>()
+
+const emit = defineEmits(['increase-time', 'decrease-time']);
+
+function increaseTime() {
+  emit('increase-time');
 }
 
-const button2Clicked = () => {
-  console.log('Button 2 clicked');
+function decreaseTime() {
+  emit('decrease-time');
 }
+
+const formattedTime = computed(() => {
+  const minutes = Math.floor(props.timeInSeconds / 60);
+  const seconds = props.timeInSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, '0')}`
+});
+
 </script>
 
 <template>
   <div class="button-container">
-    <button class="button-working" @click="button1Clicked">
+    <button class="button-working" @click="decreaseTime">
       <slot name="icon1"></slot>
     </button>
-    <slot name="info"></slot>
-    <button class="button-working" @click="button2Clicked">
+    <slot name="info">{{ formattedTime }}</slot>
+    <button class="button-working" @click="increaseTime">
       <slot name="icon2"></slot>
     </button>
   </div>
