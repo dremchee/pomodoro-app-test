@@ -1,6 +1,24 @@
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'  
+
+const currentDate = ref('');
+
+function updateCurrentDate() {
+  const now = new Date();
+  const day = String(now.getDate()).padStart(2, '0');
+  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const year = now.getFullYear();
+  currentDate.value = `${day}.${month}.${year}`;
+}
+
+onMounted(() => {
+  updateCurrentDate();
+});
+</script>
+
 <template>
   <div class="time-indicator">
-    <div class="time-indicator__date">12.01.2024</div>
+    <div class="time-indicator__date">{{ currentDate }}</div>
     <div class="time-indicator__time">15:59</div>
     <div class="time-indicator__status">Work</div>
   </div>

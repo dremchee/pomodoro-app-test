@@ -2,8 +2,8 @@
 import {defineProps} from 'vue'
 
 const props =defineProps<{
-  onPrevMonth: () => void,
-  onNextMonth: () => void
+  onPrevMonth: () => void;
+  onNextMonth: () => void;
 }>();
 </script>
 

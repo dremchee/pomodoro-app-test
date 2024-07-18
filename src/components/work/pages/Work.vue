@@ -13,7 +13,7 @@ import TimeIndicator from "../components/TimeIndicator.vue";
         <TimeIndicator />
       </div>
       <div class="work-report-container">
-        <div class="work-report-circle-container">
+        <div class="work-report-circle-container"> 
           <div class="work-report-circle" v-for="_ in 6"></div>
         </div>
         <div class="work-report-text-info">2 of 6 sessions</div>
