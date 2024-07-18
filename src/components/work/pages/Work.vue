@@ -20,24 +20,42 @@ function formatTime(seconds: number): string {
 }
 
 function toggleTimer() {
-  if(isRunning.value) {
-    clearInterval(intervalId.value!);
-    intervalId.value = null;
-  } else {
-    if(timeLeft.value === 0) {
-      timeLeft.value = timerDuration;
-    }
-    intervalId.value = setInterval(() => {
-      if(timeLeft.value > 0) {
-        timeLeft.value--;
-      } else {
+  if(intervalId.value !== null) {
+    return;
+  }
+
+  if(timeLeft.value === 0) {
+    timeLeft.value = timerDuration;
+  }
+  intervalId.value = setInterval(() => {
+    if(timeLeft.value > 0) {
+      timeLeft.value--;
+    } else {
         clearInterval(intervalId.value!);
         intervalId.value = null;
         isRunning.value = false;
-      }
-    }, 1000);
-  }
-  isRunning.value = !isRunning.value;
+    }
+  }, 1000);
+  isRunning.value = true;
+  // if(isRunning.value) {
+  //   clearInterval(intervalId.value!);
+  //   intervalId.value = null;
+  //   isRunning.value = false;
+  // } else {
+  //   if(timeLeft.value === 0) {
+  //     timeLeft.value = timerDuration;
+  //   }
+  //   intervalId.value = setInterval(() => {
+  //     if(timeLeft.value > 0) {
+  //       timeLeft.value--;
+  //     } else {
+  //       clearInterval(intervalId.value!);
+  //       intervalId.value = null;
+  //       isRunning.value = false;
+  //     }
+  //   }, 1000);
+  // }
+  // isRunning.value = true;
 }
 
 function resetTimer() {
@@ -48,9 +66,11 @@ function resetTimer() {
 }
 
 function stopTimer() {
-  clearInterval(intervalId.value!);
-  intervalId.value = null;
-  isRunning.value = false;
+  if(intervalId.value !== null) {
+    clearInterval(intervalId.value!);
+    intervalId.value = null;
+    isRunning.value = false;
+  }
 }
 </script>
 
