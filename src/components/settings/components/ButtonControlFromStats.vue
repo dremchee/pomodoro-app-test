@@ -1,17 +1,19 @@
 <script lang="ts" setup>
-function buttonWorking() {
-  console.log('button from stats working');
-  
-}
+import {defineProps} from 'vue'
+
+const props =defineProps<{
+  onPrevMonth: () => void,
+  onNextMonth: () => void
+}>();
 </script>
 
 <template>
   <div class="button-container">
-    <button class="button-working" @click="buttonWorking">
+    <button class="button-working" @click="props.onPrevMonth">
       <slot name="icon1"></slot>
     </button>
     <slot name="info">6</slot>
-    <button class="button-working" @click="buttonWorking">
+    <button class="button-working" @click="props.onNextMonth">
       <slot name="icon2"></slot>
     </button>
   </div>
@@ -20,7 +22,7 @@ function buttonWorking() {
 <style scoped>
 .button-container {
   display: flex;
-  justify-content: space-between;
+  justify-content: space-between; 
   align-items: center;
 }
 

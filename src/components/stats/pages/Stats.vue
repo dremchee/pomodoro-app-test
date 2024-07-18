@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { ref } from 'vue'
 import DirectionLeftIcon from '../../../assets/img/direction-left-icon.svg'
 import DirectionRightIcon from '../../../assets/img/direction-right-icon.svg'
 
@@ -25,17 +26,41 @@ const statsData = [{
 }, {
   date: '18.01.2024',
   sessions: 6
-}]
+}];
+
+const currentDate = new Date();
+const currentMonth = ref(currentDate.getMonth());
+const currentYear = ref(currentDate.getFullYear());
+
+const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+function prevMoth() {
+  if(currentMonth.value === 0) {
+    currentMonth.value = 11;
+    currentYear.value--;
+  } else {
+    currentMonth.value--;
+  }
+}
+
+function nextMonth() {
+  if(currentMonth.value === 11) {
+    currentMonth.value = 0;
+    currentYear.value++;
+  } else {
+    currentMonth.value++;
+  }
+}
 </script>
 
 <template>
   <div class="container stats">
-    <TwoIconButtonsFromStats>
+    <TwoIconButtonsFromStats :onPrevMonth = "prevMoth" :onNextMonth="nextMonth">
       <template #icon1>
         <DirectionLeftIcon />
       </template> 
       <template #info>
-        <div class="stats-month-text">January 2024</div>
+        <div class="stats-month-text">{{ months[currentMonth] }} {{ currentYear }}</div>
       </template>
       <template #icon2>
         <DirectionRightIcon />
