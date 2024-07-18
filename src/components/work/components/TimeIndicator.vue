@@ -1,5 +1,9 @@
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'  
+import { ref, onMounted, defineProps } from 'vue'  
+
+const props = defineProps<{
+  time: string
+}>();
 
 const currentDate = ref('');
 
@@ -19,7 +23,7 @@ onMounted(() => {
 <template>
   <div class="time-indicator">
     <div class="time-indicator__date">{{ currentDate }}</div>
-    <div class="time-indicator__time">15:59</div>
+    <div class="time-indicator__time">{{  props.time }}</div>
     <div class="time-indicator__status">Work</div>
   </div>
 </template>
