@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { ref, computed, watch } from 'vue'
+import { computed, watch } from 'vue'
 
 import PlusButtonIcon from '../../../assets/img/plus-icon.svg'
 import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
@@ -10,13 +10,12 @@ import SettingFromRounds from '../components/SettingFromRounds.vue'
 import TwoIconButtons from '../../settings/components/ButtonControl.vue'
 import TwoIconButtonsFromRounds from '../components/ButtonControlFromRounds.vue'
 
-const workTime = ref<number>(parseInt(localStorage.getItem('workTime') || '1500'));
-const shortBreakTime = ref<number>(parseInt(localStorage.getItem('shortBreakTime') || '300'));
-const longBreakTime = ref<number>(parseInt(localStorage.getItem('longBreakTime') || '1200'));
-const rounds = ref<number>(parseInt(localStorage.getItem('rounds') || '6'));
+import { workTime, shortBreakTime, longBreakTime, rounds} from '../../dataForExport/settingsData';
 
 function increaseWorkTime() {
-  workTime.value += 300;
+  if(workTime.value < 1500) {
+    workTime.value += 300;
+  }
 }
 
 function decreaseWorkTime() {
@@ -28,7 +27,9 @@ function decreaseWorkTime() {
 } 
 
 function increaseShortBreakTime() {
-  shortBreakTime.value += 300;
+  if(shortBreakTime.value < 300) {
+    shortBreakTime.value += 300;
+  }
 }
 
 function decreaseShortBreakTime() {
@@ -40,7 +41,9 @@ function decreaseShortBreakTime() {
 }
 
 function increaseLongBreakTime() {
-  longBreakTime.value += 300;
+  if(longBreakTime.value < 1200) {
+    longBreakTime.value += 300;
+  }
 }
 
 function decreaseLongBreakTime() {

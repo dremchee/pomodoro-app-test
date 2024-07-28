@@ -1,17 +1,24 @@
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch } from 'vue'
 
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg"
 import PlayButtonIcon from "../../../assets/img/play-button.svg"
 import PouseButtonIcon from "../../../assets/img/pouse-button.svg"
 import StopSessionButtonIcon from "../../../assets/img/stop-button.svg"
+import EndSound from "../audio/budilnik1.mp3"
 
 import TimeIndicator from "../components/TimeIndicator.vue"
 
-const timerDuration = 1500;
-const timeLeft = ref(timerDuration);
-const isRunning = ref(false);
+import { workTime, shortBreakTime, longBreakTime, rounds } from '../../dataForExport/settingsData'
+
+const timeLeft = ref(workTime.value);
+const isRunning = ref(false); 
+const isStopped = ref(false);
 const intervalId = ref<number | null>(null);
+const completedWorkSessions = ref(0);
+const currentPhase = ref< 'work' | 'shortBreak' | 'longBreak'>('work');
+
+const multiplierFactor = 360 / timeLeft.value;
 
 function formatTime(seconds: number): string {
   const minutes = String(Math.floor(seconds / 60)).padStart(2, '0');
@@ -19,57 +26,92 @@ function formatTime(seconds: number): string {
   return `${minutes}:${sec}`;
 }
 
-function toggleTimer() {
-  if(intervalId.value !== null) {
-    return;
-  }
 
-  if(timeLeft.value === 0) {
-    timeLeft.value = timerDuration;
-  }
+const startTimer = () => {
+  if(intervalId.value !== null) return;
+  isRunning.value = true;
+  isStopped.value = false;
   intervalId.value = setInterval(() => {
-    if(timeLeft.value > 0) {
-      timeLeft.value--;
-    } else {
-        clearInterval(intervalId.value!);
-        intervalId.value = null;
-        isRunning.value = false;
+    timeLeft.value--;
+    if(timeLeft.value <= 0) {
+      stopTimer();
+      const audio = new Audio(EndSound);
+      audio.play();
+      nextPhase();
     }
   }, 1000);
-  isRunning.value = true;
-  // if(isRunning.value) {
-  //   clearInterval(intervalId.value!);
-  //   intervalId.value = null;
-  //   isRunning.value = false;
-  // } else {
-  //   if(timeLeft.value === 0) {
-  //     timeLeft.value = timerDuration;
-  //   }
-  //   intervalId.value = setInterval(() => {
-  //     if(timeLeft.value > 0) {
-  //       timeLeft.value--;
-  //     } else {
-  //       clearInterval(intervalId.value!);
-  //       intervalId.value = null;
-  //       isRunning.value = false;
-  //     }
-  //   }, 1000);
-  // }
-  // isRunning.value = true;
-}
+};
 
-function resetTimer() {
-  clearInterval(intervalId.value!);
-  intervalId.value = null;
-  timeLeft.value = timerDuration;
-  isRunning.value = false;
-}
-
-function stopTimer() {
+const stopTimer = () => {
   if(intervalId.value !== null) {
-    clearInterval(intervalId.value!);
+    clearInterval(intervalId.value);
     intervalId.value = null;
     isRunning.value = false;
+    isStopped.value = true;
+    setInfoCircularProgressBar(timeLeft.value);
+  }
+};
+
+const reset = () => {
+  stopTimer();
+  timeLeft.value = getCurrentTime();
+  isStopped.value = false;
+  setInfoCircularProgressBar(timeLeft.value);
+}
+
+function nextPhase() {
+  if(currentPhase.value === 'work') {
+    completedWorkSessions.value++;
+    if(completedWorkSessions.value % 4 === 0) {
+      currentPhase.value = 'longBreak';
+      timeLeft.value = longBreakTime.value;
+    } else {
+      currentPhase.value = 'shortBreak';
+      timeLeft.value = shortBreakTime.value;
+    }
+  } else {
+    currentPhase.value = 'work';
+    timeLeft.value = workTime.value;
+  }
+  reset();
+}
+
+function getCurrentTime() {
+  switch(currentPhase.value) {
+    case 'work':
+      return workTime.value;
+    case 'shortBreak':
+      return shortBreakTime.value;
+    case 'longBreak':
+      return longBreakTime.value;
+  }
+}
+
+watch([workTime, shortBreakTime, longBreakTime], () => {
+  if(!isRunning.value) {
+    timeLeft.value = getCurrentTime();
+    setInfoCircularProgressBar(timeLeft.value);
+  }
+});
+
+
+watch(timeLeft, (newTime) => {
+  setInfoCircularProgressBar(newTime);
+});
+function setInfoCircularProgressBar(timeLeftValue: number) {
+  const circularProgressBar = document.querySelector('.time-indicator') as HTMLElement | null;
+  const circularDot = document.querySelector('.time-indicator__dot') as HTMLElement | null;
+  if(circularProgressBar && circularDot) {
+    const progressDegree = (getCurrentTime() - timeLeftValue) * multiplierFactor;
+    const primaryColor = 'var(--color-primary)';
+    const textColor = 'var(--color-text)';
+    const lightColor = 'var(--color-light)';
+    const backgroundColor = isStopped.value ? textColor : primaryColor;
+    
+    circularProgressBar.style.background = `conic-gradient(${backgroundColor} ${progressDegree}deg, ${lightColor} ${progressDegree}deg)`;
+
+    const shadowColor = isStopped.value ? 'rgba(226, 220, 203, 0.4)' : 'rgba(255, 69, 69, 0.4)';
+    circularDot.style.boxShadow = `0 0 10px 4px ${shadowColor}`;
   }
 }
 </script>
@@ -78,20 +120,20 @@ function stopTimer() {
   <div class="container work">
     <div class="work-content">
       <div class="work-timer-container">
-        <TimeIndicator :time="formatTime(timeLeft)"/>
+        <TimeIndicator :time="formatTime(timeLeft)" :is-running="isRunning" :is-stopped="isStopped"/>
       </div>
       <div class="work-report-container">
         <div class="work-report-circle-container"> 
-          <div class="work-report-circle" v-for="_ in 6"></div>
+          <div class="work-report-circle" v-for="(circle, index) in rounds" :key="index" :class="{'completed': index < completedWorkSessions}"></div>
         </div>
-        <div class="work-report-text-info">2 of 6 sessions</div>
+        <div class="work-report-text-info">{{ completedWorkSessions }} of {{ rounds }} sessions</div>
       </div>
     </div>
     <div class="work-action">
-      <button class="work-action__button _repeat" @click="resetTimer">
+      <button class="work-action__button _repeat" @click="reset">
         <RepeatButtonIcon />
       </button>
-      <button class="work-action__button _action" @click="toggleTimer">
+      <button class="work-action__button _action" @click="isRunning ? null : startTimer()">
         <component :is="isRunning ? PlayButtonIcon : PouseButtonIcon"></component>
       </button>
       <button class="work-action__button _stop" @click="stopTimer">
@@ -141,6 +183,10 @@ function stopTimer() {
   height: 1.25rem;
   background-color: var(--color-light);
   border-radius: 50%;
+}
+
+.work-report-circle.completed {
+  background-color: var(--color-primary);
 }
 
 .work-report-text-info {
