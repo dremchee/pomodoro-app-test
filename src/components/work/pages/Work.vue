@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, watch } from 'vue'
+import { ref, watch, onMounted } from 'vue'
 
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg"
 import PlayButtonIcon from "../../../assets/img/play-button.svg"
@@ -10,6 +10,7 @@ import EndSound from "../audio/budilnik1.mp3"
 import TimeIndicator from "../components/TimeIndicator.vue"
 
 import { workTime, shortBreakTime, longBreakTime, rounds } from '../../dataForExport/settingsData'
+import { saveToLocalStorage, loadFromLocalStorage } from '../../dataForExport/localStorageHelper'
 
 const timeLeft = ref(workTime.value);
 const isRunning = ref(false); 
@@ -40,6 +41,7 @@ const startTimer = () => {
       nextPhase();
     }
   }, 1000);
+  saveState();
 };
 
 const stopTimer = () => {
@@ -50,6 +52,7 @@ const stopTimer = () => {
     isStopped.value = true;
     setInfoCircularProgressBar(timeLeft.value);
   }
+  saveState();
 };
 
 const reset = () => {
@@ -57,6 +60,7 @@ const reset = () => {
   timeLeft.value = getCurrentTime();
   isStopped.value = false;
   setInfoCircularProgressBar(timeLeft.value);
+  saveState();
 }
 
 function nextPhase() {
@@ -92,11 +96,13 @@ watch([workTime, shortBreakTime, longBreakTime], () => {
     timeLeft.value = getCurrentTime();
     setInfoCircularProgressBar(timeLeft.value);
   }
+  saveState();
 });
 
 
 watch(timeLeft, (newTime) => {
   setInfoCircularProgressBar(newTime);
+  saveState();
 });
 function setInfoCircularProgressBar(timeLeftValue: number) {
   const circularProgressBar = document.querySelector('.time-indicator') as HTMLElement | null;
@@ -114,6 +120,34 @@ function setInfoCircularProgressBar(timeLeftValue: number) {
     circularDot.style.boxShadow = `0 0 10px 4px ${shadowColor}`;
   }
 }
+
+function saveState() {
+  const state = {
+    timeLeft: timeLeft.value,
+    isRunning: isRunning.value,
+    isStopped: isStopped.value,
+    completedWorkSessions: completedWorkSessions.value,
+    currentPhase: currentPhase.value,
+    currentDate: new Date().toLocaleDateString(),
+  };
+  saveToLocalStorage('timerState', state);
+}
+
+function loadState() {
+  const state = loadFromLocalStorage('timerState');
+  if(state) {
+    timeLeft.value = state.timeLeft;
+    isStopped.value = state.isStopped;
+    completedWorkSessions.value = state.completedWorkSessions;
+    currentPhase.value = state.currentPhase;
+
+    setInfoCircularProgressBar(timeLeft.value);
+  }
+}
+
+onMounted(() => {
+  loadState();
+});
 </script>
 
 <template>

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, defineProps, watch, computed } from 'vue';
 
+import { workTime, shortBreakTime, longBreakTime } from '../../dataForExport/settingsData';
+import { loadFromLocalStorage } from '../../dataForExport/localStorageHelper';
+
 const props = defineProps<{
   time: string;
   isRunning: boolean;
@@ -19,12 +22,30 @@ function updateCurrentDate() {
 
 onMounted(() => {
   updateCurrentDate();
+  const state = loadFromLocalStorage('timerState');
+  if(state && state.currentDate === new Date().toLocaleDateString()) {
+    currentDate.value = state.currentDate;
+  }
   updateProgressBar(props.time);
 });
 
 watch(() => props.time, (newTime) => {
   updateProgressBar(newTime);
 });
+
+function getTotalTime(): number {
+  const currentPhase = document.querySelector('.time-indicator__status')?.textContent?.toLowerCase();
+  switch(currentPhase) {
+    case 'work':
+      return workTime.value;
+    case 'short break':
+      return shortBreakTime.value;
+    case 'long break':
+      return longBreakTime.value;
+    default:
+      return workTime.value;
+  }
+}
 
 function updateProgressBar(newTime: string) {
   const circularProgressBar = document.querySelector('.time-indicator') as HTMLElement | null;
@@ -33,15 +54,16 @@ function updateProgressBar(newTime: string) {
 
   if(circularProgressBar && shadowElement && dotElement) {
     const timeLeftValue = parseInt(newTime.split(':')[0]) * 60 + parseInt(newTime.split(':')[1]);
-    const multiplierFactor = 360 / 1500;
-    const progressDegree = (1500 - timeLeftValue) * multiplierFactor;
+    const totalTime = getTotalTime();
+    const multiplierFactor = 360 / totalTime;
+    const progressDegree = (totalTime - timeLeftValue) * multiplierFactor;
 
     const primaryColor = 'var(--color-primary)';
     const textColor = 'var(--color-text)';
     const lightColor = 'var(--color-light)';
     const baseColor = props.isStopped ? textColor : primaryColor;
 
-    const color = props.isRunning ? `conic-gradient(${baseColor} ${progressDegree}deg, ${lightColor} ${progressDegree}deg)`: `conic-gradient(${lightColor} 360deg, ${textColor} 0deg)`;
+    const color = props.isRunning ? `conic-gradient(${baseColor} ${progressDegree}deg, ${lightColor} ${progressDegree}deg)` : `conic-gradient(${lightColor} 360deg, ${textColor} 0deg)`;
     const shadowColor = props.isStopped ? 'rgba(226, 220, 203, 0.4)' : 'rgba(255, 69, 69, 0.4)';
 
     circularProgressBar.style.background = color;
@@ -60,8 +82,16 @@ function updateProgressBar(newTime: string) {
 
 const dotStyle = computed(() => {
   const timeLeftValue = parseInt(props.time.split(':')[0]) * 60 + parseInt(props.time.split(':')[1]);
-  const multiplierFactor = 360 / 1500;
-  const progressDegree = (1500 - timeLeftValue) * multiplierFactor;
+  const totalTime = getTotalTime();
+
+  if(timeLeftValue === totalTime) {
+    return {
+      display: 'none',
+    }
+  }
+
+  const multiplierFactor = 360 / totalTime;
+  const progressDegree = (totalTime - timeLeftValue) * multiplierFactor;
 
   const radius = 9.5;
   const angleInRadians = (progressDegree - 90) * (Math.PI / 180);

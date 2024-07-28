@@ -17,7 +17,7 @@ defineProps<{
         <div class="settings-from-group__circles">
             <slot name="circles" />
         </div>
-    </div>
+    </div> 
 </template>
 
 <style scoped>

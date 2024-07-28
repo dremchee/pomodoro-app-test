@@ -119,7 +119,6 @@ watch(rounds, (newVal) => {
             <div class="setting-internal-parameters-text">{{ Math.floor(shortBreakTime / 60) }}:{{ (shortBreakTime % 60).toString().padStart(2, '0') }}</div>
           </template>
           <template #icon2>
-          
             <PlusButtonIcon></PlusButtonIcon>
           </template>
         </TwoIconButtons>
