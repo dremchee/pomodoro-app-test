@@ -1,71 +1,31 @@
 <script setup lang="ts">
-
 import { computed, watch } from 'vue'
+import { storeToRefs } from 'pinia'
+import { useSettingsStore } from '../useSettingsStore'
 
-import PlusButtonIcon from '../../../assets/img/plus-icon.svg'
-import MinusButtonIcon from '../../../assets/img/minus-icon.svg'
+import PlusButtonIcon from '@/assets/img/plus-icon.svg'
+import MinusButtonIcon from '@/assets/img/minus-icon.svg'
 
 import SettingsFromGroup from '../components/SettingsFromGroup.vue'
 import SettingFromRounds from '../components/SettingFromRounds.vue'
 import TwoIconButtons from '../../settings/components/ButtonControl.vue'
 import TwoIconButtonsFromRounds from '../components/ButtonControlFromRounds.vue'
 
-import { workTime, shortBreakTime, longBreakTime, rounds} from '../../dataForExport/settingsData';
+const {
+  increaseWorkTime,
+  decreaseWorkTime,
+  increaseShortBreakTime,
+  decreaseShortBreakTime,
+  increaseLongBreakTime,
+  decreaseLongBreakTime,
+  increaseRounds,
+  decreaseRounds
+} = useSettingsStore()
 
-function increaseWorkTime() {
-  if(workTime.value < 1500) {
-    workTime.value += 300;
-  }
-}
-
-function decreaseWorkTime() {
-  if(workTime.value >= 300) {
-    workTime.value -= 300;
-  } else {
-    workTime.value = 0;
-  }
-} 
-
-function increaseShortBreakTime() {
-  if(shortBreakTime.value < 300) {
-    shortBreakTime.value += 300;
-  }
-}
-
-function decreaseShortBreakTime() {
-  if(shortBreakTime.value >= 300) {
-    shortBreakTime.value -= 300;
-  } else {
-    shortBreakTime.value = 0;
-  }
-}
-
-function increaseLongBreakTime() {
-  if(longBreakTime.value < 1200) {
-    longBreakTime.value += 300;
-  }
-}
-
-function decreaseLongBreakTime() {
-  if(longBreakTime.value >= 300) {
-    longBreakTime.value -= 300;
-  } else {
-    longBreakTime.value = 0;
-  }
-}
-
-function increaseRounds() {
-  rounds.value += 1;
-} 
-
-function decreaseRounds() {
-  if(rounds.value > 1) {
-    rounds.value -= 1;
-  } 
-}
+const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore())
 
 const circles = computed(() => {
-  return Array.from({length: rounds.value}, (_, i) => ({id: i + 1}));
+  return Array.from({ length: rounds.value }, (_, i) => ({ id: i + 1 }));
 });
 
 watch(workTime, (newVal) => {
@@ -95,7 +55,8 @@ watch(rounds, (newVal) => {
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="setting-internal-parameters-text">{{ Math.floor(workTime / 60) }}:{{ (workTime % 60).toString().padStart(2, '0') }}</div>
+            <div class="setting-internal-parameters-text">{{ Math.floor(workTime / 60) }}:{{ (workTime %
+              60).toString().padStart(2, '0') }}</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
@@ -111,12 +72,14 @@ watch(rounds, (newVal) => {
     <div class="setting-parameters-el">
       <SettingsFromGroup title="Short break" test="Some text">
         <template #label>Short break</template>
-        <TwoIconButtons :timeInSeconds = "shortBreakTime" @decrease-time="decreaseShortBreakTime" @increase-time="increaseShortBreakTime">
+        <TwoIconButtons :timeInSeconds="shortBreakTime" @decrease-time="decreaseShortBreakTime"
+          @increase-time="increaseShortBreakTime">
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="setting-internal-parameters-text">{{ Math.floor(shortBreakTime / 60) }}:{{ (shortBreakTime % 60).toString().padStart(2, '0') }}</div>
+            <div class="setting-internal-parameters-text">{{ Math.floor(shortBreakTime / 60) }}:{{ (shortBreakTime %
+              60).toString().padStart(2, '0') }}</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
@@ -132,12 +95,14 @@ watch(rounds, (newVal) => {
     <div class="setting-parameters-el">
       <SettingsFromGroup title="Long break" test="Some text">
         <template #label>Long break</template>
-        <TwoIconButtons :timeInSeconds = "longBreakTime" @decrease-time="decreaseLongBreakTime" @increase-time="increaseLongBreakTime">
+        <TwoIconButtons :timeInSeconds="longBreakTime" @decrease-time="decreaseLongBreakTime"
+          @increase-time="increaseLongBreakTime">
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
           <template #info>
-            <div class="setting-internal-parameters-text">{{ Math.floor(longBreakTime / 60) }}:{{ (longBreakTime % 60).toString().padStart(2, '0') }}</div>
+            <div class="setting-internal-parameters-text">{{ Math.floor(longBreakTime / 60) }}:{{ (longBreakTime %
+              60).toString().padStart(2, '0') }}</div>
           </template>
           <template #icon2>
             <PlusButtonIcon></PlusButtonIcon>
