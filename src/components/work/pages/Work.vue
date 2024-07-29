@@ -21,7 +21,6 @@ const {
 } = storeToRefs(useSessionStore())
 
 const intervalId = ref<number | null>(null);
-// import { saveToLocalStorage, loadFromLocalStorage } from '../../dataForExport/localStorageHelper'
 import { SettingsPhase } from '@/components/settings/types'
 
 const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore())
@@ -36,6 +35,8 @@ function formatTime(seconds: number): string {
 
 
 const startTimer = () => {
+  console.log('startTimer');
+
   if (intervalId.value !== null) return;
   isRunning.value = true;
   isStopped.value = false;
@@ -111,7 +112,17 @@ watch([workTime, shortBreakTime, longBreakTime], () => {
 watch(timeLeft, (newTime) => {
   setInfoCircularProgressBar(newTime);
 
+}, {
+  immediate: true
 });
+
+onMounted(() => {
+  if (isRunning.value) {
+    startTimer()
+  }
+});
+
+
 function setInfoCircularProgressBar(timeLeftValue: number) {
   const circularProgressBar = document.querySelector('.time-indicator') as HTMLElement | null;
   const circularDot = document.querySelector('.time-indicator__dot') as HTMLElement | null;
@@ -129,9 +140,6 @@ function setInfoCircularProgressBar(timeLeftValue: number) {
   }
 }
 
-onMounted(() => {
-  setInfoCircularProgressBar(timeLeft.value);
-});
 </script>
 
 <template>
@@ -142,7 +150,7 @@ onMounted(() => {
       </div>
       <div class="work-report-container">
         <div class="work-report-circle-container">
-          <div class="work-report-circle" v-for="(circle, index) in rounds" :key="index"
+          <div class="work-report-circle" v-for="(_, index) in rounds" :key="index"
             :class="{ 'completed': index < completedWorkSessions }"></div>
         </div>
         <div class="work-report-text-info">{{ completedWorkSessions }} of {{ rounds }} sessions</div>
@@ -153,7 +161,7 @@ onMounted(() => {
         <RepeatButtonIcon />
       </button>
       <button class="work-action__button _action" @click="isRunning ? null : startTimer()">
-        <component :is="isRunning ? PlayButtonIcon : PouseButtonIcon"></component>
+        <Component :is="isRunning ? PlayButtonIcon : PouseButtonIcon"></Component>
       </button>
       <button class="work-action__button _stop" @click="stopTimer">
         <StopSessionButtonIcon />
