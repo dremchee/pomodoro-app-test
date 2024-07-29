@@ -1,5 +1,5 @@
 <script setup lang="ts">
-  import Navigation from './components/havigation/Navigation.vue'
+import Navigation from '@/components/havigation/Navigation.vue'
 </script>
 
 <template>
