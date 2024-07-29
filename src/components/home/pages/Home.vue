@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useSessionStore } from '../useSessionStore';
+import { useSessionStore } from '../../work/useSessionStore';
 import Button from '../../shared/Button.vue';
 import PlayIcon from '../../../assets/img/play.svg';
 import { useRouter } from 'vue-router';

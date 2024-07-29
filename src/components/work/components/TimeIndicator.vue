@@ -23,7 +23,7 @@ function updateCurrentDate() {
 onMounted(() => {
   updateCurrentDate();
   const state = loadFromLocalStorage('timerState');
-  if(state && state.currentDate === new Date().toLocaleDateString()) {
+  if (state && state.currentDate === new Date().toLocaleDateString()) {
     currentDate.value = state.currentDate;
   }
   updateProgressBar(props.time);
@@ -35,7 +35,7 @@ watch(() => props.time, (newTime) => {
 
 function getTotalTime(): number {
   const currentPhase = document.querySelector('.time-indicator__status')?.textContent?.toLowerCase();
-  switch(currentPhase) {
+  switch (currentPhase) {
     case 'work':
       return workTime.value;
     case 'short break':
@@ -52,7 +52,7 @@ function updateProgressBar(newTime: string) {
   const shadowElement = document.querySelector('.time-indicator__shadow') as HTMLElement | null;
   const dotElement = document.querySelector('.time-indicator__dot') as HTMLElement | null;
 
-  if(circularProgressBar && shadowElement && dotElement) {
+  if (circularProgressBar && shadowElement && dotElement) {
     const timeLeftValue = parseInt(newTime.split(':')[0]) * 60 + parseInt(newTime.split(':')[1]);
     const totalTime = getTotalTime();
     const multiplierFactor = 360 / totalTime;
@@ -84,7 +84,7 @@ const dotStyle = computed(() => {
   const timeLeftValue = parseInt(props.time.split(':')[0]) * 60 + parseInt(props.time.split(':')[1]);
   const totalTime = getTotalTime();
 
-  if(timeLeftValue === totalTime) {
+  if (timeLeftValue === totalTime) {
     return {
       display: 'none',
     }
@@ -106,11 +106,13 @@ const dotStyle = computed(() => {
 </script>
 
 <template>
-  <div :class="['time-indicator', {'running': props.isRunning, 'stopped': props.isStopped}]">
-    <div :class="['time-indicator__shadow', {'running': props.isRunning, 'stopped': props.isStopped}]"></div>
+  <div :class="['time-indicator', { 'running': props.isRunning, 'stopped': props.isStopped }]">
+    <div :class="['time-indicator__shadow', { 'running': props.isRunning, 'stopped': props.isStopped }]"></div>
     <div class="time-indicator-progress-bar">
       <div class="time-indicator__date">{{ currentDate }}</div>
-      <div :class="['time-indicator__time', {'running': props.isRunning, 'stopped': props.isStopped}]">{{  props.time }}</div>
+      <div :class="['time-indicator__time', { 'running': props.isRunning, 'stopped': props.isStopped }]">{{ props.time
+        }}
+      </div>
       <div class="time-indicator__status">Work</div>
       <div v-if="props.isRunning || props.isStopped" class="time-indicator__dot" :style="dotStyle"></div>
     </div>
@@ -191,9 +193,10 @@ const dotStyle = computed(() => {
   font-weight: 500;
 }
 
-.time-indicator__timer.running{
+.time-indicator__timer.running {
   color: var(--color-text);
 }
+
 .time-indicator__time.stopped {
   color: var(--color-light);
 }
@@ -220,5 +223,4 @@ const dotStyle = computed(() => {
   /* box-shadow: 0 0 10px 4px rgba(226, 220, 203, 0.4); */
   filter: drop-shadow(0 10px 10px rgba(226, 220, 203, 0.4));
 }
-
 </style>
