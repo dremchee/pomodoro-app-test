@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { computed, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useSettingsStore } from '../useSettingsStore'
 
@@ -23,26 +22,6 @@ const {
 } = useSettingsStore()
 
 const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore())
-
-const circles = computed(() => {
-  return Array.from({ length: rounds.value }, (_, i) => ({ id: i + 1 }));
-});
-
-watch(workTime, (newVal) => {
-  localStorage.setItem('workTime', newVal.toString());
-});
-
-watch(shortBreakTime, (newVal) => {
-  localStorage.setItem('shortBreakTime', newVal.toString())
-});
-
-watch(longBreakTime, (newVal) => {
-  localStorage.setItem('longBreakTime', newVal.toString())
-});
-
-watch(rounds, (newVal) => {
-  localStorage.setItem('rounds', newVal.toString())
-});
 </script>
 
 <template>
@@ -131,7 +110,7 @@ watch(rounds, (newVal) => {
         </TwoIconButtonsFromRounds>
 
         <template #circles>
-          <div class="circles-el" v-for="circle in circles" :key="circle.id"></div>
+          <div class="circles-el" v-for="circle in rounds" :key="circle"></div>
         </template>
       </SettingFromRounds>
     </div>
