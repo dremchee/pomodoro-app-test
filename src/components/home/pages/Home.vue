@@ -9,7 +9,7 @@ const sessionStore = useSessionStore()
 const router = useRouter()
 
 const routeToSession = () => {
-  sessionStore.isActiveSession = true
+  sessionStore.isRunning = true
   router.push('/work')
 }
 </script>

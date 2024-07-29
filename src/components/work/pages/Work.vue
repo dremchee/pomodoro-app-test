@@ -1,5 +1,8 @@
 <script setup lang="ts">
-import { ref, watch, onMounted } from 'vue'
+import { storeToRefs } from 'pinia'
+import { ref, watch, onMounted, computed } from 'vue'
+import { useSettingsStore } from '@/components/settings/useSettingsStore'
+import { useSessionStore } from '@/components/work/useSessionStore'
 
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg"
 import PlayButtonIcon from "../../../assets/img/play-button.svg"
@@ -9,15 +12,19 @@ import EndSound from "../audio/budilnik1.mp3"
 
 import TimeIndicator from "../components/TimeIndicator.vue"
 
-import { workTime, shortBreakTime, longBreakTime, rounds } from '../../dataForExport/settingsData'
-import { saveToLocalStorage, loadFromLocalStorage } from '../../dataForExport/localStorageHelper'
+const {
+  timeLeft,
+  isRunning,
+  isStopped,
+  completedWorkSessions,
+  currentPhase,
+} = storeToRefs(useSessionStore())
 
-const timeLeft = ref(workTime.value);
-const isRunning = ref(false); 
-const isStopped = ref(false);
 const intervalId = ref<number | null>(null);
-const completedWorkSessions = ref(0);
-const currentPhase = ref< 'work' | 'shortBreak' | 'longBreak'>('work');
+// import { saveToLocalStorage, loadFromLocalStorage } from '../../dataForExport/localStorageHelper'
+import { SettingsPhase } from '@/components/settings/types'
+
+const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore())
 
 const multiplierFactor = 360 / timeLeft.value;
 
@@ -29,91 +36,92 @@ function formatTime(seconds: number): string {
 
 
 const startTimer = () => {
-  if(intervalId.value !== null) return;
+  if (intervalId.value !== null) return;
   isRunning.value = true;
   isStopped.value = false;
   intervalId.value = setInterval(() => {
     timeLeft.value--;
-    if(timeLeft.value <= 0) {
+    if (timeLeft.value <= 0) {
       stopTimer();
       const audio = new Audio(EndSound);
       audio.play();
       nextPhase();
     }
   }, 1000);
-  saveState();
 };
 
 const stopTimer = () => {
-  if(intervalId.value !== null) {
+  if (intervalId.value !== null) {
     clearInterval(intervalId.value);
     intervalId.value = null;
     isRunning.value = false;
     isStopped.value = true;
     setInfoCircularProgressBar(timeLeft.value);
   }
-  saveState();
+
 };
 
 const reset = () => {
   stopTimer();
-  timeLeft.value = getCurrentTime();
+  timeLeft.value = currentTime.value;
   isStopped.value = false;
   setInfoCircularProgressBar(timeLeft.value);
-  saveState();
+
 }
 
 function nextPhase() {
-  if(currentPhase.value === 'work') {
+  if (currentPhase.value === 'work') {
     completedWorkSessions.value++;
-    if(completedWorkSessions.value % 4 === 0) {
-      currentPhase.value = 'longBreak';
+    if (completedWorkSessions.value % 4 === 0) {
+      currentPhase.value = SettingsPhase.LONG_BREAK;
       timeLeft.value = longBreakTime.value;
     } else {
-      currentPhase.value = 'shortBreak';
+      currentPhase.value = SettingsPhase.SHORT_BREAK;
       timeLeft.value = shortBreakTime.value;
     }
   } else {
-    currentPhase.value = 'work';
+    currentPhase.value = SettingsPhase.WORK;
     timeLeft.value = workTime.value;
   }
   reset();
 }
 
-function getCurrentTime() {
-  switch(currentPhase.value) {
-    case 'work':
+const currentTime = computed(() => {
+  switch (currentPhase.value) {
+    case SettingsPhase.WORK:
       return workTime.value;
-    case 'shortBreak':
+    case SettingsPhase.SHORT_BREAK:
       return shortBreakTime.value;
-    case 'longBreak':
+    case SettingsPhase.LONG_BREAK:
       return longBreakTime.value;
+    default:
+      return workTime.value;
   }
-}
+})
 
 watch([workTime, shortBreakTime, longBreakTime], () => {
-  if(!isRunning.value) {
-    timeLeft.value = getCurrentTime();
+  if (!isRunning.value) {
+    timeLeft.value = currentTime.value;
     setInfoCircularProgressBar(timeLeft.value);
   }
-  saveState();
+
 });
 
 
 watch(timeLeft, (newTime) => {
   setInfoCircularProgressBar(newTime);
-  saveState();
+
 });
 function setInfoCircularProgressBar(timeLeftValue: number) {
   const circularProgressBar = document.querySelector('.time-indicator') as HTMLElement | null;
   const circularDot = document.querySelector('.time-indicator__dot') as HTMLElement | null;
-  if(circularProgressBar && circularDot) {
-    const progressDegree = (getCurrentTime() - timeLeftValue) * multiplierFactor;
+  if (circularProgressBar && circularDot) {
+    const progressDegree = (currentTime.value - timeLeftValue) * multiplierFactor;
     const primaryColor = 'var(--color-primary)';
     const textColor = 'var(--color-text)';
     const lightColor = 'var(--color-light)';
     const backgroundColor = isStopped.value ? textColor : primaryColor;
-    
+
     circularProgressBar.style.background = `conic-gradient(${backgroundColor} ${progressDegree}deg, ${lightColor} ${progressDegree}deg)`;
 
     const shadowColor = isStopped.value ? 'rgba(226, 220, 203, 0.4)' : 'rgba(255, 69, 69, 0.4)';
@@ -121,32 +129,8 @@ function setInfoCircularProgressBar(timeLeftValue: number) {
   }
 }
 
-function saveState() {
-  const state = {
-    timeLeft: timeLeft.value,
-    isRunning: isRunning.value,
-    isStopped: isStopped.value,
-    completedWorkSessions: completedWorkSessions.value,
-    currentPhase: currentPhase.value,
-    currentDate: new Date().toLocaleDateString(),
-  };
-  saveToLocalStorage('timerState', state);
-}
-
-function loadState() {
-  const state = loadFromLocalStorage('timerState');
-  if(state) {
-    timeLeft.value = state.timeLeft;
-    isStopped.value = state.isStopped;
-    completedWorkSessions.value = state.completedWorkSessions;
-    currentPhase.value = state.currentPhase;
-
-    setInfoCircularProgressBar(timeLeft.value);
-  }
-}
-
 onMounted(() => {
-  loadState();
+  setInfoCircularProgressBar(timeLeft.value);
 });
 </script>
 
@@ -154,11 +138,12 @@ onMounted(() => {
   <div class="container work">
     <div class="work-content">
       <div class="work-timer-container">
-        <TimeIndicator :time="formatTime(timeLeft)" :is-running="isRunning" :is-stopped="isStopped"/>
+        <TimeIndicator :time="formatTime(timeLeft)" :is-running="isRunning" :is-stopped="isStopped" />
       </div>
       <div class="work-report-container">
-        <div class="work-report-circle-container"> 
-          <div class="work-report-circle" v-for="(circle, index) in rounds" :key="index" :class="{'completed': index < completedWorkSessions}"></div>
+        <div class="work-report-circle-container">
+          <div class="work-report-circle" v-for="(circle, index) in rounds" :key="index"
+            :class="{ 'completed': index < completedWorkSessions }"></div>
         </div>
         <div class="work-report-text-info">{{ completedWorkSessions }} of {{ rounds }} sessions</div>
       </div>

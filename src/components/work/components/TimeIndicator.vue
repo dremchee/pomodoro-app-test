@@ -1,16 +1,17 @@
 <script setup lang="ts">
 import { ref, onMounted, defineProps, watch, computed } from 'vue';
+import { useSettingsStore } from '@/components/settings/useSettingsStore';
+import { useSessionStore } from '@/components/work/useSessionStore';
 
-import { workTime, shortBreakTime, longBreakTime } from '../../dataForExport/settingsData';
-import { loadFromLocalStorage } from '../../dataForExport/localStorageHelper';
+const { workTime, shortBreakTime, longBreakTime } = storeToRefs(useSettingsStore())
+const { currentDate } = storeToRefs(useSessionStore())
+import { storeToRefs } from 'pinia';
 
 const props = defineProps<{
   time: string;
   isRunning: boolean;
   isStopped: boolean;
 }>();
-
-const currentDate = ref('');
 
 function updateCurrentDate() {
   const now = new Date();
@@ -22,10 +23,8 @@ function updateCurrentDate() {
 
 onMounted(() => {
   updateCurrentDate();
-  const state = loadFromLocalStorage('timerState');
-  if (state && state.currentDate === new Date().toLocaleDateString()) {
-    currentDate.value = state.currentDate;
-  }
+
+  currentDate.value = new Date().toLocaleDateString();
   updateProgressBar(props.time);
 });
 
@@ -79,30 +78,6 @@ function updateProgressBar(newTime: string) {
     shadowElement.style.transform = `translate(${x}rem, ${y}rem)`;
   }
 }
-
-const dotStyle = computed(() => {
-  const timeLeftValue = parseInt(props.time.split(':')[0]) * 60 + parseInt(props.time.split(':')[1]);
-  const totalTime = getTotalTime();
-
-  if (timeLeftValue === totalTime) {
-    return {
-      display: 'none',
-    }
-  }
-
-  const multiplierFactor = 360 / totalTime;
-  const progressDegree = (totalTime - timeLeftValue) * multiplierFactor;
-
-  const radius = 9.5;
-  const angleInRadians = (progressDegree - 90) * (Math.PI / 180);
-  const x = radius + (radius * Math.cos(angleInRadians));
-  const y = radius + (radius * Math.sin(angleInRadians));
-
-  return {
-    top: `${y}rem`,
-    left: `${x}rem`,
-  };
-});
 </script>
 
 <template>
@@ -114,7 +89,6 @@ const dotStyle = computed(() => {
         }}
       </div>
       <div class="time-indicator__status">Work</div>
-      <div v-if="props.isRunning || props.isStopped" class="time-indicator__dot" :style="dotStyle"></div>
     </div>
   </div>
 </template>
