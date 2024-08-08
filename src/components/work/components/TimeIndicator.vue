@@ -1,11 +1,13 @@
 <script setup lang="ts">
-import { ref, onMounted, defineProps, watch, computed } from 'vue';
-import { useSettingsStore } from '@/components/settings/useSettingsStore';
-import { useSessionStore } from '@/components/work/useSessionStore';
+import { ref, onMounted, defineProps, watch, nextTick } from "vue";
+import { useSettingsStore } from "@/components/settings/useSettingsStore";
+import { useSessionStore } from "@/components/work/useSessionStore";
+import { storeToRefs } from "pinia";
 
-const { workTime, shortBreakTime, longBreakTime } = storeToRefs(useSettingsStore())
-const { currentDate } = storeToRefs(useSessionStore())
-import { storeToRefs } from 'pinia';
+const { workTime, shortBreakTime, longBreakTime } = storeToRefs(
+  useSettingsStore()
+);
+const { currentDate, currentPhase } = storeToRefs(useSessionStore());
 
 const props = defineProps<{
   time: string;
@@ -13,33 +15,31 @@ const props = defineProps<{
   isStopped: boolean;
 }>();
 
+const circleLength = 1008.45039;
+
+const circleStyle = ref({
+  strokeDasharray: `${circleLength}`,
+  strokeDashoffset: `${circleLength}`,
+  stroke: "var(--color-primary)",
+  transition: "none",
+  // filter: `drop-shadow(0 0 15px var(--color-primary))`,
+});
+
 function updateCurrentDate() {
   const now = new Date();
-  const day = String(now.getDate()).padStart(2, '0');
-  const month = String(now.getMonth() + 1).padStart(2, '0');
+  const day = String(now.getDate()).padStart(2, "0");
+  const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = now.getFullYear();
   currentDate.value = `${day}.${month}.${year}`;
 }
 
-onMounted(() => {
-  updateCurrentDate();
-
-  currentDate.value = new Date().toLocaleDateString();
-  updateProgressBar(props.time);
-});
-
-watch(() => props.time, (newTime) => {
-  updateProgressBar(newTime);
-});
-
 function getTotalTime(): number {
-  const currentPhase = document.querySelector('.time-indicator__status')?.textContent?.toLowerCase();
-  switch (currentPhase) {
-    case 'work':
+  switch (currentPhase.value) {
+    case "work":
       return workTime.value;
-    case 'short break':
+    case "shortBreak":
       return shortBreakTime.value;
-    case 'long break':
+    case "longBreak":
       return longBreakTime.value;
     default:
       return workTime.value;
@@ -47,114 +47,129 @@ function getTotalTime(): number {
 }
 
 function updateProgressBar(newTime: string) {
-  const circularProgressBar = document.querySelector('.time-indicator') as HTMLElement | null;
-  const shadowElement = document.querySelector('.time-indicator__shadow') as HTMLElement | null;
-  const dotElement = document.querySelector('.time-indicator__dot') as HTMLElement | null;
+  const totalTime = getTotalTime();
+  const [minutes, seconds] = newTime.split(":").map(Number);
+  const timeLeftValue = minutes * 60 + seconds;
+  const progress = timeLeftValue / totalTime;
+  const dashOffset = circleLength * progress;
 
-  if (circularProgressBar && shadowElement && dotElement) {
-    const timeLeftValue = parseInt(newTime.split(':')[0]) * 60 + parseInt(newTime.split(':')[1]);
-    const totalTime = getTotalTime();
-    const multiplierFactor = 360 / totalTime;
-    const progressDegree = (totalTime - timeLeftValue) * multiplierFactor;
-
-    const primaryColor = 'var(--color-primary)';
-    const textColor = 'var(--color-text)';
-    const lightColor = 'var(--color-light)';
-    const baseColor = props.isStopped ? textColor : primaryColor;
-
-    const color = props.isRunning ? `conic-gradient(${baseColor} ${progressDegree}deg, ${lightColor} ${progressDegree}deg)` : `conic-gradient(${lightColor} 360deg, ${textColor} 0deg)`;
-    const shadowColor = props.isStopped ? 'rgba(226, 220, 203, 0.4)' : 'rgba(255, 69, 69, 0.4)';
-
-    circularProgressBar.style.background = color;
-    // circularProgressBar.style.boxShadow = ` 0 -10px 4px ${shadowColor}`;
-    shadowElement.style.boxShadow = `0 0 10px 4px ${shadowColor}`;
-    dotElement.style.boxShadow = `0 0 10px 4px ${shadowColor}`;
-
-    const radius = 9.5;
-    const angleInRadians = (progressDegree - 90) * (Math.PI / 180);
-    const x = radius * Math.cos(angleInRadians);
-    const y = radius * Math.sin(angleInRadians);
-
-    shadowElement.style.transform = `translate(${x}rem, ${y}rem)`;
-  }
+  circleStyle.value = {
+    strokeDasharray: `${circleLength}`,
+    strokeDashoffset: dashOffset.toString(),
+    stroke: props.isStopped
+      ? "var(--color-text)"
+      : "var(--color-primary)",
+    transition: props.isRunning ? `stroke-dashoffset 1s linear` : "none",
+    // filter: `drop-shadow(0 0 15px ${props.isStopped ? "var(--color-text)" : "var(--color-primary)"})`,
+  };
 }
+
+onMounted(() => {
+  updateCurrentDate();
+  updateProgressBar(props.time);
+});
+
+watch(
+  () => props.time,
+  (newTime) => {
+    nextTick(() => {
+      updateProgressBar(newTime);
+    });
+  },
+  { immediate: true }
+);
+
+watch(
+  () => props.isRunning,
+  () => {
+    nextTick(() => {
+      updateProgressBar(props.time)
+    });
+  }
+);
+
+watch(
+  currentPhase,
+  () => {
+    circleStyle.value = {
+      strokeDasharray: `${circleLength}`,
+      strokeDashoffset: `${circleLength}`,
+      stroke: "var(--color-primary)",
+      transition: "none",
+      // filter: `drop-shadow(0 0 15px var(--color-primary))`,
+    };
+    nextTick(() => {
+      updateProgressBar(props.time);
+    });
+  }
+);
 </script>
 
 <template>
-  <div :class="['time-indicator', { 'running': props.isRunning, 'stopped': props.isStopped }]">
-    <div :class="['time-indicator__shadow', { 'running': props.isRunning, 'stopped': props.isStopped }]"></div>
-    <div class="time-indicator-progress-bar">
-      <div class="time-indicator__date">{{ currentDate }}</div>
-      <div :class="['time-indicator__time', { 'running': props.isRunning, 'stopped': props.isStopped }]">{{ props.time
-        }}
+  <div class="flex-wrapper">
+    <div class="single-chart">
+      <svg view-box="0 0 330 330" class="circular-chart">
+        <path class="circle-bg" d="M165 4.5 
+          a 160.5 160.5 0 0 1 0 321 
+          a 160.5 160.5 0 0 1 0 -321" />
+        <path :style="circleStyle" class="circle" d="M165 4.5 
+          a 160.5 160.5 0 0 1 0 321 
+          a 160.5 160.5 0 0 1 0 -321" />
+      </svg>
+      <div class="text-container">
+        <div class="time-indicator__date">{{ currentDate }}</div>
+        <div :class="['time-indicator__time', { running: props.isRunning, stopped: props.isStopped }]"
+          :style="{ color: props.isStopped ? 'var(--color-light)' : 'var(--color-text)' }">
+          {{ props.time }}
+        </div>
+        <div class="time-indicator__status">Work</div>
       </div>
-      <div class="time-indicator__status">Work</div>
     </div>
   </div>
 </template>
 
 <style scoped>
-.time-indicator {
+.flex-wrapper {
   display: flex;
-  flex-direction: column;
-  align-items: center;
   justify-content: center;
-  gap: 0.5rem;
-  border-radius: 50%;
-  width: 19rem;
-  height: 19rem;
-  background: var(--color-light);
-  position: relative;
-  transition: box-shadow 0.3s ease-in-out;
-  /* box-shadow: var(--box-shadow); */
+  align-items: center;
 }
 
-/* .time-indicator.time-indicator.stopped {
-  box-shadow: 0 0 10px 4px rgba(226, 220, 203, 0.4);
-} */
+.single-chart {
+  position: relative;
+  width: 330px;
+  height: 330px;
+}
 
-.time-indicator__shadow {
-  position: absolute;
+.circular-chart {
+  display: block;
+  margin: 0 auto;
   width: 100%;
   height: 100%;
-  border-radius: 50%;
+}
+
+.circle-bg {
+  fill: none;
+  stroke: var(--color-light);
+  stroke-width: 8;
+}
+
+.circle {
+  fill: none;
+  stroke-width: 8;
+  stroke-linecap: round;
+  stroke: var(--color-primary);
+  stroke-dasharray: 1008.45039;
+  stroke-dashoffset: 1008.45039;
+  transition: stroke-dashoffsest 1s linear, stroke 0.3s ease, filter 0.3s ease;
+}
+
+.text-container {
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
-  pointer-events: none;
-  z-index: -1;
-  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-}
-
-.time-indicator__shadow.running {
-  filter: drop-shadow(0 -10px 10px rgba(255, 69, 69, 0.4));
-}
-
-.time-indicator__shadow.stopped {
-  filter: drop-shadow(0 -10px 10px rgba(226, 220, 203, 0.4));
-}
-
-/* .time-indicator.running {
-  box-shadow: 0 0 10px 4px var(--color-primary);
-  background: var(--color-light);
-  box-shadow: 0 0 10px 4px rgba(255, 69, 69, 0.4);
-} */
-
-/* .time-indicator.stopped {
-  background-color: var(--color-light);
-  box-shadow: 0 0 10px 4px rgba(226, 220, 203, 0.4);
-} */
-.time-indicator-progress-bar {
-  width: 94%;
-  height: 94%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  background-color: var(--color-background);
-  border-radius: 50%;
-  /* box-shadow: 0px 0px 2px rgba(255, 69, 69, 0.4), 0px 4px -1px rgba(255, 69, 69, 0.65), 0px 1px inset rgba(255, 69, 69, 0.08); */
-  position: relative;
+  text-align: center;
 }
 
 .time-indicator__date {
@@ -167,34 +182,18 @@ function updateProgressBar(newTime: string) {
   font-weight: 500;
 }
 
-.time-indicator__timer.running {
-  color: var(--color-text);
-}
-
-.time-indicator__time.stopped {
-  color: var(--color-light);
-}
-
 .time-indicator__status {
   font-size: 1.5rem;
   font-weight: 500;
 }
 
-.time-indicator__dot {
-  position: absolute;
-  width: 1.5rem;
-  height: 1.5rem;
-  background-color: var(--color-primary);
-  border-radius: 50%;
-  transform: translate(-50%, -50%);
-  transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
-  /* box-shadow: 0 0 10px 4px rgba(255, 69, 69, 0.4); */
-  filter: drop-shadow(0 10px 10px rgba(255, 69, 69, 0.4));
-}
+@keyframes progress {
+  from {
+    stroke-dashoffset: 0;
+  }
 
-.time-indicator.stopped .time-indicator__dot {
-  background-color: var(--color-text);
-  /* box-shadow: 0 0 10px 4px rgba(226, 220, 203, 0.4); */
-  filter: drop-shadow(0 10px 10px rgba(226, 220, 203, 0.4));
+  to {
+    stroke-dashoffset: 1008.45039;
+  }
 }
 </style>

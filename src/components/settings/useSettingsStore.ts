@@ -1,21 +1,22 @@
 import { ref } from "vue";
 import { defineStore } from "pinia";
+import { ListFormat } from "typescript";
 
 const LIMITS = {
  workTime: {
   min: 60,
   max: 1500,
-  step: 300,
+  step: 60,
  },
  shortBreakTime: {
   min: 60,
   max: 300,
-  step: 300,
+  step: 60,
  },
  longBreakTime: {
   min: 60,
   max: 1200,
-  step: 300,
+  step: 60,
  },
  rounds: {
   min: 1,
@@ -42,42 +43,42 @@ export const useSettingsStore = defineStore(
   // }
 
   function increaseWorkTime() {
-   if (workTime.value < 1500) {
-    workTime.value += 300;
+   if (workTime.value < LIMITS.workTime.max) {
+    workTime.value += LIMITS.workTime.step;
    }
   }
 
   function decreaseWorkTime() {
-   if (workTime.value >= 300) {
-    workTime.value -= 300;
+   if (workTime.value >= LIMITS.workTime.min) {
+    workTime.value -= LIMITS.workTime.step;
    } else {
     workTime.value = 0;
    }
   }
 
   function increaseShortBreakTime() {
-   if (shortBreakTime.value < 300) {
-    shortBreakTime.value += 300;
+   if (shortBreakTime.value < LIMITS.shortBreakTime.max) {
+    shortBreakTime.value += LIMITS.shortBreakTime.step;
    }
   }
 
   function decreaseShortBreakTime() {
-   if (shortBreakTime.value >= 300) {
-    shortBreakTime.value -= 300;
+   if (shortBreakTime.value >= LIMITS.shortBreakTime.min) {
+    shortBreakTime.value -= LIMITS.shortBreakTime.step;
    } else {
     shortBreakTime.value = 0;
    }
   }
 
   function increaseLongBreakTime() {
-   if (longBreakTime.value < 1200) {
-    longBreakTime.value += 300;
+   if (longBreakTime.value < LIMITS.longBreakTime.max) {
+    longBreakTime.value += LIMITS.longBreakTime.step;
    }
   }
 
   function decreaseLongBreakTime() {
-   if (longBreakTime.value >= 300) {
-    longBreakTime.value -= 300;
+   if (longBreakTime.value >= LIMITS.longBreakTime.min) {
+    longBreakTime.value -= LIMITS.longBreakTime.step;
    } else {
     longBreakTime.value = 0;
    }

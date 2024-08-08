@@ -1,6 +1,7 @@
 import { defineStore } from "pinia";
 import { ref } from "vue";
 import { SettingsPhase } from "@/components/settings/types";
+import Settings from "../settings/pages/Settings.vue";
 
 export const useSessionStore = defineStore(
  "session",
@@ -9,7 +10,7 @@ export const useSessionStore = defineStore(
   const isRunning = ref<boolean>(false);
   const isStopped = ref<boolean>(false);
   const completedWorkSessions = ref<number>(0);
-  const currentPhase = ref<SettingsPhase>();
+  const currentPhase = ref<SettingsPhase>(SettingsPhase.WORK);
   const currentDate = ref<string>();
 
   return {
