@@ -12,6 +12,8 @@ export const useSessionStore = defineStore(
   const completedWorkSessions = ref<number>(0);
   const currentPhase = ref<SettingsPhase>(SettingsPhase.WORK);
   const currentDate = ref<string>();
+  const sessionStartedToday = ref<boolean>(false);
+  
 
   return {
    timeLeft,
@@ -20,6 +22,7 @@ export const useSessionStore = defineStore(
    completedWorkSessions,
    currentPhase,
    currentDate,
+   sessionStartedToday,
   };
  },
  {

@@ -1,8 +1,9 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, watch, onMounted, computed, onUnmounted } from "vue";
+import { ref, watch, onMounted, computed, onUnmounted, onBeforeUnmount } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useSessionStore } from "@/components/work/useSessionStore";
+import { useStatsStore } from "@/components/stats/useStatsStore";
 
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg";
 import PlayButtonIcon from "../../../assets/img/play-button.svg";
@@ -12,7 +13,8 @@ import EndSound from "../audio/budilnik1.mp3";
 
 import TimeIndicator from "../components/TimeIndicator.vue";
 
-const { timeLeft, isRunning, isStopped, completedWorkSessions, currentPhase } =
+
+const { timeLeft, isRunning, isStopped, completedWorkSessions, currentPhase, } =
   storeToRefs(useSessionStore());
 
 const intervalId = ref<number | null>(null);
@@ -22,6 +24,8 @@ const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(
   useSettingsStore()
 );
 
+const statsStore = useStatsStore();
+
 function formatTime(seconds: number): string {
   const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
   const sec = String(seconds % 60).padStart(2, "0");
@@ -29,11 +33,17 @@ function formatTime(seconds: number): string {
 }
 
 const startTimer = () => {
-  console.log("startTimer");
+  if (completedWorkSessions.value >= rounds.value) {
+    alert("Все раунды завершены. Если хотите продолжить дальше работать, увеличте количество раундов в настройках");
+    return;
+  }
 
   if (intervalId.value !== null) return;
+
   isRunning.value = true;
   isStopped.value = false;
+
+
   intervalId.value = setInterval(() => {
     timeLeft.value--;
     if (timeLeft.value <= 0) {
@@ -90,6 +100,19 @@ const currentTime = computed(() => {
   }
 });
 
+function resetDailySessions() {
+  const date = new Date();
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  const currentDate = `${day}.${month}.${year}`;
+
+  statsStore.addSessionData(currentDate, completedWorkSessions.value);
+
+  completedWorkSessions.value = 0;
+  reset();
+}
+
 watch([workTime, shortBreakTime, longBreakTime], () => {
   if (!isRunning.value) {
     timeLeft.value = currentTime.value;
@@ -106,16 +129,28 @@ watch(
 );
 
 onMounted(() => {
-  if (isRunning.value) {
+  if (isRunning.value && intervalId.value === null) {
     startTimer();
   }
 });
 
+onBeforeUnmount(() => {
+  if (intervalId.value !== null) {
+    clearInterval(intervalId.value);
+    intervalId.value = null;
+  }
+});
+
 onUnmounted(() => {
-  stopTimer();
+  resetDailySessions();
 });
 
 const completeCurrentPhase = () => {
+  if (completedWorkSessions.value >= rounds.value) {
+    alert("Все раунды завершины. Нвозможно завершить текущую фазу");
+    return;
+  }
+
   if (currentPhase.value === "work") {
     completedWorkSessions.value++;
     if (completedWorkSessions.value % 4 === 0) {

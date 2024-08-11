@@ -1,13 +1,22 @@
 <script setup lang="ts">
-import HouseButtonIcon from '../../assets/img/house-button.svg'
-import StattisticsButtonIcon from '../../assets/img/statistics-button.svg'
-import CustomisationButtonIcon from '../../assets/img/customisation-button.svg'
+import { computed } from 'vue';
+import { useSessionStore } from '../work/useSessionStore';
+import HouseButtonIcon from '../../assets/img/house-button.svg';
+import StattisticsButtonIcon from '../../assets/img/statistics-button.svg';
+import CustomisationButtonIcon from '../../assets/img/customisation-button.svg';
+
+const sessionStore = useSessionStore();
+
+const homeRoute = computed(() => {
+ return sessionStore.sessionStartedToday ? '/work' : '/';
+});
+
 </script>
 
 <template>
  <nav class="navigation">
-  <RouterLink to="/" class="navigation-link">
-   <HouseButtonIcon></HouseButtonIcon>
+  <RouterLink :to="homeRoute" class="navigation-link">
+   <HouseButtonIcon />
   </RouterLink>
   <RouterLink to="/stats" class="navigation-link">
    <StattisticsButtonIcon />
