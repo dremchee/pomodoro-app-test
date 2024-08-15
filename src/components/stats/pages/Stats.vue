@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useStatsStore } from '@/components/stats/useStatsStore'
-import DirectionLeftIcon from '../../../assets/img/direction-left-icon.svg'
-import DirectionRightIcon from '../../../assets/img/direction-right-icon.svg'
+import { ref, computed } from 'vue';
+import { useStatsStore } from '@/components/stats/useStatsStore';
+import { useSettingsStore } from '@/components/settings/useSettingsStore';
+import DirectionLeftIcon from '../../../assets/img/direction-left-icon.svg';
+import DirectionRightIcon from '../../../assets/img/direction-right-icon.svg';
 
-import TwoIconButtonsFromStats from '../../../components/settings/components/ButtonControlFromStats.vue'
+import TwoIconButtonsFromStats from '../../../components/settings/components/ButtonControlFromStats.vue';
 
 const statsStore = useStatsStore();
+const settingsStore = useSettingsStore();
 
 const currentDate = new Date();
 const currentMonth = ref(currentDate.getMonth());
@@ -54,13 +56,14 @@ const filteredStatsData = computed(() => {
    </template>
   </TwoIconButtonsFromStats>
   <div class="stats-graphic-container">
-   <div class="stats-graphic-el" v-for="_ in 30"></div>
+   <div class="stats-graphic-el" v-for="_ in 31"></div>
   </div>
   <div class="stats-activity-container">
    <div class="stats-activity-el" v-for="item in filteredStatsData" :key="item.date">
     <div class="stats-activity-el-date">{{ item.date }}</div>
     <div class="stats-activity-el-circle-container">
-     <div class="stats-activity-el-circle" v-for="_ in item.sessions"></div>
+     <div class="stats-activity-el-circle" v-for="index in item.totalRounds" :key="index"
+      :class="{ completed: index <= item.sessions }"></div>
     </div>
    </div>
   </div>
@@ -142,5 +145,9 @@ const filteredStatsData = computed(() => {
  height: 10px;
  background-color: var(--color-light);
  border-radius: 50%;
+}
+
+.stats-activity-el-circle.completed {
+ background-color: var(--color-primary);
 }
 </style>

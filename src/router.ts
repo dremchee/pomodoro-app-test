@@ -1,5 +1,6 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useSessionStore } from "@/components/work/useSessionStore";
+import { useTimerStore } from "@/components/work/useTimerStore";
 
 const routes = [
  {
@@ -8,10 +9,12 @@ const routes = [
   component: () => import("./components/home/pages/Home.vue"),
   meta: { title: "Pomodoro" },
   beforeEnter: () => {
-   const sessionStore = useSessionStore();
+   const timerStore = useTimerStore();
 
-   if (sessionStore.isRunning) {
-    return { name: "work" };
+   if(timerStore.isRunning) {
+    return {
+     name: "work",
+    };
    }
   },
  },
@@ -39,3 +42,11 @@ export const router = createRouter({
  history: createWebHistory(),
  routes,
 });
+
+router.beforeEach((to, from, next) => {
+ const timerStore = useTimerStore();
+ timerStore.saveState();
+ next();
+});
+
+export default router;

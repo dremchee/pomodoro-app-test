@@ -1,13 +1,13 @@
 <script setup lang="ts">
 import { ref, onMounted, defineProps, watch, nextTick } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
-import { useSessionStore } from "@/components/work/useSessionStore";
+import { useTimerStore } from "@/components/work/useTimerStore";
 import { storeToRefs } from "pinia";
 
 const { workTime, shortBreakTime, longBreakTime } = storeToRefs(
   useSettingsStore()
 );
-const { currentDate, currentPhase } = storeToRefs(useSessionStore());
+const { currentPhase } = storeToRefs(useTimerStore());
 
 const props = defineProps<{
   time: string;
@@ -30,7 +30,7 @@ function updateCurrentDate() {
   const day = String(now.getDate()).padStart(2, "0");
   const month = String(now.getMonth() + 1).padStart(2, "0");
   const year = now.getFullYear();
-  currentDate.value = `${day}.${month}.${year}`;
+  return `${day}.${month}.${year}`;
 }
 
 function getTotalTime(): number {
@@ -117,7 +117,7 @@ watch(
           a 160.5 160.5 0 0 1 0 -321" />
       </svg>
       <div class="text-container">
-        <div class="time-indicator__date">{{ currentDate }}</div>
+        <div class="time-indicator__date">{{ updateCurrentDate() }}</div>
         <div :class="['time-indicator__time', { running: props.isRunning, stopped: props.isStopped }]"
           :style="{ color: props.isStopped ? 'var(--color-light)' : 'var(--color-text)' }">
           {{ props.time }}

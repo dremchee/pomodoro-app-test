@@ -1,30 +1,25 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, watch, onMounted, computed, onUnmounted, onBeforeUnmount } from "vue";
+import { ref, onMounted, onUnmounted, onBeforeMount } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useSessionStore } from "@/components/work/useSessionStore";
 import { useStatsStore } from "@/components/stats/useStatsStore";
+import { useTimerStore } from "@/components/work/useTimerStore";
 
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg";
 import PlayButtonIcon from "../../../assets/img/play-button.svg";
 import PouseButtonIcon from "../../../assets/img/pouse-button.svg";
 import StopSessionButtonIcon from "../../../assets/img/stop-button.svg";
-import EndSound from "../audio/budilnik1.mp3";
 
 import TimeIndicator from "../components/TimeIndicator.vue";
 
+const timeStore = useTimerStore();
+const { timeLeft, isRunning, isStopped, completedWorkSessions, currentPhase } = storeToRefs(timeStore);
 
-const { timeLeft, isRunning, isStopped, completedWorkSessions, currentPhase, } =
-  storeToRefs(useSessionStore());
+const settingsStore = useSettingsStore();
+const { rounds } = storeToRefs(settingsStore);
 
-const intervalId = ref<number | null>(null);
-import { SettingsPhase } from "@/components/settings/types";
-
-const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(
-  useSettingsStore()
-);
-
-const statsStore = useStatsStore();
+const sessionStore = useSessionStore();
 
 function formatTime(seconds: number): string {
   const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
@@ -33,71 +28,51 @@ function formatTime(seconds: number): string {
 }
 
 const startTimer = () => {
-  if (completedWorkSessions.value >= rounds.value) {
-    alert("Все раунды завершены. Если хотите продолжить дальше работать, увеличте количество раундов в настройках");
-    return;
+  if (timeStore.isRunning) {
+    timeStore.stopTimer();
+  } else {
+    timeStore.startTimer(timeLeft.value);
   }
-
-  if (intervalId.value !== null) return;
-
-  isRunning.value = true;
-  isStopped.value = false;
-
-
-  intervalId.value = setInterval(() => {
-    timeLeft.value--;
-    if (timeLeft.value <= 0) {
-      stopTimer();
-      const audio = new Audio(EndSound);
-      audio.play();
-      nextPhase();
-    }
-  }, 1000) as unknown as number;
-};
-
-const stopTimer = () => {
-  if (intervalId.value !== null) {
-    clearInterval(intervalId.value);
-    intervalId.value = null;
-    isRunning.value = false;
-    isStopped.value = true;
-  }
-};
+}
 
 const reset = () => {
-  stopTimer();
-  timeLeft.value = currentTime.value;
-  isStopped.value = false;
+  timeStore.resetTimer();
 }
 
-function nextPhase() {
-  if (currentPhase.value === "work") {
-    completedWorkSessions.value++;
-    if (completedWorkSessions.value % 4 === 0) {
-      currentPhase.value = SettingsPhase.LONG_BREAK;
-      timeLeft.value = longBreakTime.value;
+const completeCurrentPhase = () => {
+  if (completedWorkSessions.value >= rounds.value) {
+    resetDailySessions();
+    return;
+  }
+  timeStore.nextPhase()
+}
+
+onBeforeMount(() => {
+  console.log("Загрузка состояния перед монтированием компонента");
+  timeStore.loadState();
+});
+
+onMounted(() => {
+  console.log("Компонент смонтирован");
+  sessionStore.loadSessionData();
+
+  // timeStore.loadState();
+
+  if (timeStore.isRunning && !timeStore.isStopped) {
+    const remainingTime = timeStore.timeLeft;
+    if (remainingTime > 0) {
+      timeStore.startTimer(remainingTime);
     } else {
-      currentPhase.value = SettingsPhase.SHORT_BREAK;
-      timeLeft.value = shortBreakTime.value;
+      timeStore.resetTimer();
     }
-  } else {
-    currentPhase.value = SettingsPhase.WORK;
-    timeLeft.value = workTime.value;
+  } else if (timeStore.timeLeft <= 0) {
+    timeStore.resetTimer();
   }
-  reset();
-}
+});
 
-const currentTime = computed(() => {
-  switch (currentPhase.value) {
-    case SettingsPhase.WORK:
-      return workTime.value;
-    case SettingsPhase.SHORT_BREAK:
-      return shortBreakTime.value;
-    case SettingsPhase.LONG_BREAK:
-      return longBreakTime.value;
-    default:
-      return workTime.value;
-  }
+onUnmounted(() => {
+  timeStore.saveState();
+  sessionStore.saveSessionData();
 });
 
 function resetDailySessions() {
@@ -107,63 +82,9 @@ function resetDailySessions() {
   const year = date.getFullYear();
   const currentDate = `${day}.${month}.${year}`;
 
-  statsStore.addSessionData(currentDate, completedWorkSessions.value);
+  sessionStore.addSessionData(currentDate, completedWorkSessions.value);
 
   completedWorkSessions.value = 0;
-  reset();
-}
-
-watch([workTime, shortBreakTime, longBreakTime], () => {
-  if (!isRunning.value) {
-    timeLeft.value = currentTime.value;
-  }
-});
-
-watch(
-  timeLeft,
-  (newTime) => {
-  },
-  {
-    immediate: true,
-  }
-);
-
-onMounted(() => {
-  if (isRunning.value && intervalId.value === null) {
-    startTimer();
-  }
-});
-
-onBeforeUnmount(() => {
-  if (intervalId.value !== null) {
-    clearInterval(intervalId.value);
-    intervalId.value = null;
-  }
-});
-
-onUnmounted(() => {
-  resetDailySessions();
-});
-
-const completeCurrentPhase = () => {
-  if (completedWorkSessions.value >= rounds.value) {
-    alert("Все раунды завершины. Нвозможно завершить текущую фазу");
-    return;
-  }
-
-  if (currentPhase.value === "work") {
-    completedWorkSessions.value++;
-    if (completedWorkSessions.value % 4 === 0) {
-      currentPhase.value = SettingsPhase.LONG_BREAK;
-      timeLeft.value = longBreakTime.value;
-    } else {
-      currentPhase.value = SettingsPhase.SHORT_BREAK;
-      timeLeft.value = shortBreakTime.value
-    }
-  } else {
-    currentPhase.value = SettingsPhase.WORK;
-    timeLeft.value = workTime.value;
-  }
   reset();
 }
 </script>
@@ -188,7 +109,7 @@ const completeCurrentPhase = () => {
       <button class="work-action__button _repeat" @click="reset">
         <RepeatButtonIcon />
       </button>
-      <button class="work-action__button _action" @click="isRunning ? stopTimer() : startTimer()">
+      <button class="work-action__button _action" @click="startTimer()">
         <Component :is="isRunning ? PlayButtonIcon : PouseButtonIcon"></Component>
       </button>
       <button class="work-action__button _phase-completion" @click="completeCurrentPhase()">
