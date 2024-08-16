@@ -1,43 +1,53 @@
 import { defineStore } from "pinia";
 import { storeToRefs } from "pinia";
-import { ref } from "vue";
+import { ref, reactive, toRaw } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useStatsStore } from "@/components/stats/useStatsStore";
+import { useTimerStore } from "./useTimerStore";
 // import { SettingsPhase } from "@/components/settings/types";
 import Settings from "../settings/pages/Settings.vue";
 
 export const useSessionStore = defineStore(
  "session",
  () => {
-  const { rounds } = storeToRefs(useSettingsStore());
-  const sessionData = ref<Record<string, number>>({});
-  const completedRounds = ref(0);
+  const { workTime, shortBreakTime, longBreakTime } = useSettingsStore();
+  interface SessionData {
+   [key: string]: number;
+  }
+  const sessionData = reactive<SessionData>({});
+  // let completedRounds = ref(0);
+  let completedWorkSessions = ref(0);
+  let rounds = ref<number>(6);
 
-  const addSessionData = (date: string, completedWorkSessions: number) => {
-   if(sessionData.value[date]) {
-    sessionData.value[date] += completedWorkSessions;
+  const addSessionData = (date: string, completedWorkSessionsCount: number) => {
+   if(sessionData[date]) {
+    sessionData[date] += completedWorkSessionsCount;
    } else {
-    sessionData.value[date] = completedWorkSessions;
+    sessionData[date] = completedWorkSessionsCount;
    }
-   completedRounds.value += completedWorkSessions;
-   console.log("Adding session data:", {date, completedWorkSessions, rounds: rounds.value});
+   // completedRounds.value += completedWorkSessionsCount;
+   completedWorkSessions.value += completedWorkSessionsCount;
+   console.log("Adding session data:", {date, completedWorkSessionsCount, rounds: rounds.value});
    
    saveSessionData();
 
    const statsStore = useStatsStore();
-   statsStore.addSessionData(date, completedRounds.value, rounds.value);
+   statsStore.addSessionData(date, completedWorkSessions.value, rounds.value);
   }
 
   const completeCurrentPhase = () => {
    const currentDate = new Date().toISOString().split('T')[0];
-   useSessionStore().addSessionData(currentDate, 1);
+   completedWorkSessions.value;
+   addSessionData(currentDate, 1);
   }
 
   const saveSessionData = () => {
    try{
-    localStorage.setItem('sessionData', JSON.stringify(sessionData.value));
-    localStorage.setItem('completedRounds', JSON.stringify(completedRounds.value));
-    console.log("Saved session data:", {sessionData: sessionData.value, completedRounds: completedRounds.value});
+    localStorage.setItem('sessionData', JSON.stringify(toRaw(sessionData)));
+    localStorage.setItem('completedWorkSessions', JSON.stringify(completedWorkSessions.value));
+    localStorage.setItem('rounds', JSON.stringify(rounds.value));
+    console.log("Saved session data:", {sessionData: JSON.parse(JSON.stringify(toRaw(sessionData))), completedWorkSessions: completedWorkSessions.value, rounds: rounds.value});
+    // console.log("Saved session data:", {sessionData: sessionData, completedRounds: completedRounds.value});
    } catch(error) {
     console.error('Failed to save data:', error);
    }
@@ -46,26 +56,39 @@ export const useSessionStore = defineStore(
   const loadSessionData = () => {
    try{
     const savedData = localStorage.getItem('sessionData');
-    const savedCompletedRounds = localStorage.getItem('completedRounds');
-    if(savedData) {
-     sessionData.value = JSON.parse(savedData);
+    const savedCompletedWorkSessions = localStorage.getItem('completedWorkSessions');
+    const savedRounds = localStorage.getItem('rounds');
+    if(savedData !== null && savedData !== 'undefined') {
+     Object.assign(sessionData, JSON.parse(savedData));
     }
-    if(savedCompletedRounds) {
-     completedRounds.value = JSON.parse(savedCompletedRounds);
+    if(savedCompletedWorkSessions !== null && savedCompletedWorkSessions !== 'undefined') {
+     completedWorkSessions.value = JSON.parse(savedCompletedWorkSessions);
     }
 
-    console.log("Loaded session data:", {sessionData: sessionData.value, completedRounds: completedRounds.value});
+    if(savedRounds !== null && savedRounds !== 'undefined') {
+     rounds.value = JSON.parse(savedRounds);
+    }
+    console.log("Loaded session data:", {sessionData: JSON.parse(JSON.stringify(toRaw(sessionData))), completedWorkSessions: completedWorkSessions.value});
    } catch(error) {
     console.error('Failed to load data:', error);
    }
   };
+
+  const setRounds = (newRounds: number) => {
+   rounds.value = newRounds;
+  }
   
   return {
+   workTime,
+   shortBreakTime,
+   longBreakTime,
+   rounds,
    sessionData,
-   completedRounds,
+   completedWorkSessions,
    addSessionData,
    saveSessionData,
    loadSessionData, 
    completeCurrentPhase,
+   setRounds,
   };
 });

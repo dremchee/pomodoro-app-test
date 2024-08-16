@@ -6,17 +6,18 @@ import { useSettingsStore } from '@/components/settings/useSettingsStore';
 import EndSound from '@/components/work/audio/budilnik1.mp3';
 import { JsxEmit } from 'typescript';
 import { RefSymbol } from '@vue/reactivity';
+import { useSessionStore } from './useSessionStore';
 // import { JsxEmit } from 'typescript';
 
 export const useTimerStore = defineStore('timer', () => {
- const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore());
+ const sessionStore = useSessionStore();
  
  const timeLeft = ref(0);
  const intervalId = ref<number | null>(null);
  const isRunning = ref<boolean>(false);
  const isStopped = ref<boolean>(false);
  const currentPhase = ref<SettingsPhase>(SettingsPhase.WORK);
- const completedWorkSessions = ref<number>(0);
+ // const completedWorkSessions = ref<number>(0);
  const lastSaveTimestamp = ref<number | null>(null);
 
 
@@ -67,18 +68,21 @@ export const useTimerStore = defineStore('timer', () => {
  }
 
  const nextPhase = () => {
+  // const sessionStore = useSessionStore();
+  sessionStore.completeCurrentPhase();
+
   if (currentPhase.value === SettingsPhase.WORK) {
-   completedWorkSessions.value++;
-   if (completedWorkSessions.value % 4 === 0) {
+   // sessionStore.completeCurrentPhase();
+   if (sessionStore.completedWorkSessions % 4 === 0) {
      currentPhase.value = SettingsPhase.LONG_BREAK;
-     timeLeft.value = longBreakTime.value;
+     timeLeft.value = sessionStore.longBreakTime;
    } else {
      currentPhase.value = SettingsPhase.SHORT_BREAK;
-     timeLeft.value = shortBreakTime.value;
+     timeLeft.value = sessionStore.shortBreakTime;
    }
  } else {
    currentPhase.value = SettingsPhase.WORK;
-   timeLeft.value = workTime.value;
+   timeLeft.value = sessionStore.workTime;
  }
  stopTimer();
 }
@@ -86,13 +90,13 @@ export const useTimerStore = defineStore('timer', () => {
  const getCurrenPhaseTime = () => {
   switch (currentPhase.value) {
    case SettingsPhase.WORK:
-    return workTime.value;
+    return sessionStore.workTime;
    case SettingsPhase.SHORT_BREAK:
-    return shortBreakTime.value;
+    return sessionStore.shortBreakTime;
    case SettingsPhase.LONG_BREAK:
-    return longBreakTime.value;
+    return sessionStore.longBreakTime;
    default:
-    return workTime.value;
+    return sessionStore.workTime;
   }
  }
 
@@ -106,7 +110,7 @@ export const useTimerStore = defineStore('timer', () => {
    timeLeft: timeLeft.value,
    isRunning: isRunning.value,
    isStopped: isStopped.value,
-   completedWorkSessions: completedWorkSessions.value,
+   // completedWorkSessions: completedWorkSessions.value,
    currentPhase: currentPhase.value
   });
   
@@ -114,10 +118,10 @@ export const useTimerStore = defineStore('timer', () => {
   localStorage.setItem('timeLeft', timeLeft.value.toString());
   localStorage.setItem('isRunning', JSON.stringify(isRunning.value));
   localStorage.setItem('isStopped', JSON.stringify(isStopped.value));
-  localStorage.setItem('completedWorkSessions', completedWorkSessions.value.toString());
+  // localStorage.setItem('completedWorkSessions', completedWorkSessions.value.toString());
   localStorage.setItem('currentPhase', currentPhase.value.toString());
   localStorage.setItem('lastSaveTimestamp', Date.now().toString());
-  console.log("Saved state:", {timeLeft: timeLeft.value, isRunning: isRunning.value, isStopped: isStopped.value, completedWorkSessions: completedWorkSessions.value, currentPhase: currentPhase.value});
+  console.log("Saved state:", {timeLeft: timeLeft.value, isRunning: isRunning.value, isStopped: isStopped.value, currentPhase: currentPhase.value});
   
  }; 
 
@@ -125,7 +129,7 @@ export const useTimerStore = defineStore('timer', () => {
   const savedTimeLeft = localStorage.getItem('timeLeft');
   const savedIsRunning = localStorage.getItem('isRunning');
   const savedIsStopped = localStorage.getItem('isStopped');
-  const savedCompletedWorkSessions = localStorage.getItem('completedWorkSessions');
+  // const savedCompletedWorkSessions = localStorage.getItem('completedWorkSessions');
   const savedCurrentPhase = localStorage.getItem('currentPhase');
   const savedLastSaveTimestamp = localStorage.getItem('lastSaveTimestamp');
 
@@ -134,7 +138,7 @@ export const useTimerStore = defineStore('timer', () => {
     savedTimeLeft,
     savedIsRunning,
     savedIsStopped,
-    savedCompletedWorkSessions,
+    // savedCompletedWorkSessions,
     savedCurrentPhase,
     savedLastSaveTimestamp,
   });
@@ -155,9 +159,6 @@ export const useTimerStore = defineStore('timer', () => {
    } else {
     timeLeft.value = parseInt(savedTimeLeft, 10);
    }
-  //  if(timeLeft.value === 0) {
-  //   timeLeft.value = getCurrenPhaseTime();
-  //  }
   } else {
     timeLeft.value = getCurrenPhaseTime();
     console.log('Defaulting timeLeft to:', timeLeft.value);
@@ -174,10 +175,10 @@ export const useTimerStore = defineStore('timer', () => {
    
   }
 
-  if(savedCompletedWorkSessions !== null) {
-   completedWorkSessions.value = parseInt(savedCompletedWorkSessions, 10);
-   console.log('Loaded completedWorkSessions:', completedWorkSessions.value);
-  }
+  // if(savedCompletedWorkSessions !== null) {
+  //  completedWorkSessions.value = parseInt(savedCompletedWorkSessions, 10);
+  //  console.log('Loaded completedWorkSessions:', completedWorkSessions.value);
+  // }
 
   if(savedCurrentPhase !== null) {
       currentPhase.value = savedCurrentPhase as SettingsPhase;
@@ -187,21 +188,21 @@ export const useTimerStore = defineStore('timer', () => {
     timeLeft: timeLeft.value,
     isRunning: isRunning.value,
     isStopped: isStopped.value,
-    completedWorkSessions: completedWorkSessions.value,
+    // completedWorkSessions: completedWorkSessions.value,
     currentPhase: currentPhase.value,
   });
  };
 
  return {
-  workTime,
-  shortBreakTime,
-  longBreakTime,
-  rounds,
+  // workTime,
+  // shortBreakTime,
+  // longBreakTime,
+  // rounds,
   timeLeft,
   isRunning,
   isStopped,
   currentPhase, 
-  completedWorkSessions,
+  // completedWorkSessions,
   startTimer,
   stopTimer,
   resetTimer,

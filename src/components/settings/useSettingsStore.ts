@@ -1,6 +1,7 @@
-import { ref } from "vue";
+import { ref, watch } from "vue";
 import { defineStore } from "pinia";
 import { ListFormat } from "typescript";
+import { useSessionStore } from "../work/useSessionStore";
 
 const LIMITS = {
  workTime: {
@@ -32,6 +33,8 @@ export const useSettingsStore = defineStore(
   const shortBreakTime = ref<number>(300);
   const longBreakTime = ref<number>(1200);
   const rounds = ref<number>(6);
+
+  const sessionStore = useSessionStore();
 
   // /**
   //  *
@@ -85,14 +88,22 @@ export const useSettingsStore = defineStore(
   }
 
   function increaseRounds() {
-   rounds.value += 1;
+   if(rounds.value < LIMITS.rounds.max) {
+    rounds.value += 1;
+    sessionStore.setRounds(rounds.value);
+   }
   }
 
   function decreaseRounds() {
-   if (rounds.value > 1) {
+   if (rounds.value > LIMITS.rounds.min) {
     rounds.value -= 1;
+    sessionStore.setRounds(rounds.value);
    }
   }
+
+  watch(rounds, (newRounds) => {
+   sessionStore.setRounds(newRounds);
+  });
 
   return {
    // State

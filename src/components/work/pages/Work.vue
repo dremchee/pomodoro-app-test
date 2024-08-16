@@ -14,12 +14,14 @@ import StopSessionButtonIcon from "../../../assets/img/stop-button.svg";
 import TimeIndicator from "../components/TimeIndicator.vue";
 
 const timeStore = useTimerStore();
-const { timeLeft, isRunning, isStopped, completedWorkSessions, currentPhase } = storeToRefs(timeStore);
+const { timeLeft, isRunning, isStopped, currentPhase } = storeToRefs(timeStore);
 
 const settingsStore = useSettingsStore();
 const { rounds } = storeToRefs(settingsStore);
 
 const sessionStore = useSessionStore();
+const { completedWorkSessions } = storeToRefs(sessionStore);
+
 
 function formatTime(seconds: number): string {
   const minutes = String(Math.floor(seconds / 60)).padStart(2, "0");
