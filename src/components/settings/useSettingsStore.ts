@@ -21,7 +21,7 @@ const LIMITS = {
  },
  rounds: {
   min: 1,
-  max: 10,
+  max: 15,
   step: 1,
  },
 };
@@ -102,8 +102,10 @@ export const useSettingsStore = defineStore(
   }
 
   watch(rounds, (newRounds) => {
+   console.log('New rounds value in useSettingsStore:', newRounds);
+   
    sessionStore.setRounds(newRounds);
-  });
+  }), {deep: true};
 
   return {
    // State

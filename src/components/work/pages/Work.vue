@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, onMounted, onUnmounted, onBeforeMount } from "vue";
+import { ref, onMounted, onUnmounted, onBeforeMount, watch } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useSessionStore } from "@/components/work/useSessionStore";
 import { useStatsStore } from "@/components/stats/useStatsStore";
@@ -17,7 +17,7 @@ const timeStore = useTimerStore();
 const { timeLeft, isRunning, isStopped, currentPhase } = storeToRefs(timeStore);
 
 const settingsStore = useSettingsStore();
-const { rounds } = storeToRefs(settingsStore);
+const { rounds } = storeToRefs(useSessionStore());
 
 const sessionStore = useSessionStore();
 const { completedWorkSessions } = storeToRefs(sessionStore);
@@ -46,17 +46,38 @@ const completeCurrentPhase = () => {
     resetDailySessions();
     return;
   }
-  timeStore.nextPhase()
+
+  // completedWorkSessions.value++;
+
+  sessionStore.saveSessionData();
+
+  timeStore.nextPhase();
 }
+
+watch(() => completedWorkSessions.value, (newValue) => {
+  console.log(`completedWorkSessions изменилось: ${newValue}`);
+  sessionStore.saveSessionData();
+});
+
+watch(completedWorkSessions, (newValue) => {
+  console.log(`Сохранение completedWorkSessions: ${newValue}`);
+  sessionStore.saveSessionData();
+});
+
+watch(() => rounds.value, (newValue) => {
+  console.log("Rounds updated in Work.vue:", newValue);
+});
+
 
 onBeforeMount(() => {
   console.log("Загрузка состояния перед монтированием компонента");
   timeStore.loadState();
+  sessionStore.loadSessionData();
 });
 
 onMounted(() => {
   console.log("Компонент смонтирован");
-  sessionStore.loadSessionData();
+  // sessionStore.loadSessionData();
 
   // timeStore.loadState();
 
@@ -73,8 +94,14 @@ onMounted(() => {
 });
 
 onUnmounted(() => {
+  console.log("Сохранение состояния перед размонтированием компонента");
   timeStore.saveState();
   sessionStore.saveSessionData();
+  // console.log("Состояние сохранено:", {
+  //   completedWorkSessions: localStorage.getItem('completedWorkSessions'),
+  //   rounds: localStorage.getItem
+  // });
+
 });
 
 function resetDailySessions() {
@@ -86,7 +113,7 @@ function resetDailySessions() {
 
   sessionStore.addSessionData(currentDate, completedWorkSessions.value);
 
-  completedWorkSessions.value = 0;
+  sessionStore.setCompletedWorkSessions(0);
   reset();
 }
 </script>

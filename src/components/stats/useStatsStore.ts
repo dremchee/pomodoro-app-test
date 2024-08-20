@@ -8,6 +8,7 @@ export const useStatsStore = defineStore("stats", () => {
   const existingData = sessionData.value.find(data => data.date === date);
   if(existingData) {
    existingData.sessions += sessions;
+   existingData.totalRounds += totalRounds;
   } else {
    sessionData.value.push({date, sessions, totalRounds});
   }
