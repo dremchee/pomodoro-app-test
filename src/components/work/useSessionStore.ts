@@ -75,7 +75,7 @@ export const useSessionStore = defineStore(
 
     if(savedDate !== currentDate) {
       console.log("Обнаружен новый день. Сброс данных сессии.");
-      completedWorkSessions.value = (0);
+      completedWorkSessions.value = 0;
       setRounds(6);
     } else {
       if(savedData !== null && savedData !== 'undefined') {
@@ -124,5 +124,8 @@ export const useSessionStore = defineStore(
    completeCurrentPhase,
    setRounds,
   //  setCompletedWorkSessions,
-  };
+  }
+
+}, {
+  persist: true,
 });

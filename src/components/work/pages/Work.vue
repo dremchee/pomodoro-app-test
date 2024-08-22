@@ -71,31 +71,30 @@ watch(() => rounds.value, (newValue) => {
 
 onBeforeMount(() => {
   console.log("Загрузка состояния перед монтированием компонента");
-  timeStore.loadState();
+  // timeStore.loadState();
   sessionStore.loadSessionData();
 });
 
 onMounted(() => {
   console.log("Компонент смонтирован");
+  console.log(`Восстановленные значения: isRunning=${isRunning.value}, timeLeft=${timeLeft.value}`);
+
   // sessionStore.loadSessionData();
 
   // timeStore.loadState();
 
-  if (timeStore.isRunning && !timeStore.isStopped) {
-    const remainingTime = timeStore.timeLeft;
-    if (remainingTime > 0) {
-      timeStore.startTimer(remainingTime);
-    } else {
-      timeStore.resetTimer();
-    }
-  } else if (timeStore.timeLeft <= 0) {
+  if (isRunning.value && timeLeft.value > 0) {
+    console.log("Перезапуск таймера после восстановления состояния");
+
+    timeStore.startTimer(timeLeft.value);
+  } else if (timeLeft.value <= 0) {
     timeStore.resetTimer();
   }
 });
 
 onUnmounted(() => {
   console.log("Сохранение состояния перед размонтированием компонента");
-  timeStore.saveState();
+  // timeStore.saveState();
   sessionStore.saveSessionData();
   // console.log("Состояние сохранено:", {
   //   completedWorkSessions: localStorage.getItem('completedWorkSessions'),
@@ -111,9 +110,9 @@ function resetDailySessions() {
   const year = date.getFullYear();
   const currentDate = `${day}.${month}.${year}`;
 
-  sessionStore.addSessionData(currentDate, completedWorkSessions.value);
+  // sessionStore.addSessionData(currentDate, completedWorkSessions.value);
 
-  sessionStore.setCompletedWorkSessions(0);
+  // sessionStore.setCompletedWorkSessions(0);
   reset();
 }
 </script>

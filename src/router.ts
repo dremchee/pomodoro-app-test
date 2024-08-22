@@ -43,10 +43,5 @@ export const router = createRouter({
  routes,
 });
 
-router.beforeEach((to, from, next) => {
- const timerStore = useTimerStore();
- timerStore.saveState();
- next();
-});
 
 export default router;
