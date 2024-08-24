@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import { SettingsPhase } from '../settings/types';
 import EndSound from '@/components/work/audio/budilnik1.mp3';
 import { useSessionStore } from './useSessionStore';
-import { RefSymbol } from '@vue/reactivity';
 
 export const useTimerStore = defineStore('timer', () => {
  const sessionStore = useSessionStore();
@@ -17,19 +16,23 @@ export const useTimerStore = defineStore('timer', () => {
 
 
  const startTimer = (duration: number) => {
+  if(sessionStore.completedWorkSessions >= sessionStore.rounds) {
+    return;
+  }
+
+  if(intervalId.value !== null) {
+    clearInterval(intervalId.value);
+  }
+
   if(duration) {
    timeLeft.value = duration;
   }
-
-  console.log(`Запуск таймера с оставшимся временем: ${timeLeft.value}`);
   
-
   isRunning.value = true;
   isStopped.value = false;
 
   intervalId.value = setInterval(() => {
   timeLeft.value--;
-  console.log(`Оставшееся время: ${timeLeft.value}`);
   
    if(timeLeft.value <= 0) {
     clearInterval(intervalId.value!);
@@ -55,13 +58,14 @@ export const useTimerStore = defineStore('timer', () => {
  }
 
  const resetTimer = () => {
-  console.log("Сброс таймера");
   stopTimer();
   timeLeft.value = getCurrenPhaseTime();
  }
 
  const nextPhase = () => {
-  sessionStore.completeCurrentPhase();
+  if(currentPhase.value === SettingsPhase.WORK) {
+    sessionStore.completeCurrentPhase();
+  }
 
   if (currentPhase.value === SettingsPhase.WORK) {
    if (sessionStore.completedWorkSessions % 4 === 0) {
@@ -75,6 +79,7 @@ export const useTimerStore = defineStore('timer', () => {
    currentPhase.value = SettingsPhase.WORK;
    timeLeft.value = sessionStore.workTime;
  }
+ 
  stopTimer();
 }
 
@@ -91,7 +96,6 @@ export const useTimerStore = defineStore('timer', () => {
   }
  }
 
-
  return {
   timeLeft,
   isRunning,
@@ -104,11 +108,6 @@ export const useTimerStore = defineStore('timer', () => {
   nextPhase,
  };
 }, {
-  persist: [
-  {
-    paths: ['currentPhase', 'isRunning', 'isStopped', 'timeLeft'],
-    storage: window.localStorage,
-  },
-]
-}) ;
+  persist: true,
+});
 

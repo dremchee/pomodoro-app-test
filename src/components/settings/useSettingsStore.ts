@@ -1,6 +1,5 @@
 import { ref, watch } from "vue";
 import { defineStore } from "pinia";
-import { ListFormat } from "typescript";
 import { useSessionStore } from "../work/useSessionStore";
 
 const LIMITS = {
@@ -88,16 +87,18 @@ export const useSettingsStore = defineStore(
   }
 
   function increaseRounds() {
+   const currentDate = new Date().toISOString().split('T')[0];
    if(rounds.value < LIMITS.rounds.max) {
     rounds.value += 1;
-    sessionStore.setRounds(rounds.value);
+    sessionStore.addSessionData(currentDate, sessionStore.completedWorkSessions, rounds.value, false);
    }
   }
 
   function decreaseRounds() {
-   if (rounds.value > LIMITS.rounds.min) {
+   const currentDate = new Date().toISOString().split('T')[0];
+   if (rounds.value > sessionStore.completedWorkSessions) {
     rounds.value -= 1;
-    sessionStore.setRounds(rounds.value);
+    sessionStore.addSessionData(currentDate, sessionStore.completedWorkSessions, rounds.value, false);
    }
   }
 

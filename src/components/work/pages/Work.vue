@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { storeToRefs } from "pinia";
-import { ref, onMounted, onUnmounted, onBeforeMount, watch } from "vue";
-import { useSettingsStore } from "@/components/settings/useSettingsStore";
+import { onMounted } from "vue";
 import { useSessionStore } from "@/components/work/useSessionStore";
-import { useStatsStore } from "@/components/stats/useStatsStore";
 import { useTimerStore } from "@/components/work/useTimerStore";
 
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg";
@@ -14,13 +12,10 @@ import StopSessionButtonIcon from "../../../assets/img/stop-button.svg";
 import TimeIndicator from "../components/TimeIndicator.vue";
 
 const timeStore = useTimerStore();
-const { timeLeft, isRunning, isStopped, currentPhase } = storeToRefs(timeStore);
 
-const settingsStore = useSettingsStore();
-const { rounds } = storeToRefs(useSessionStore());
+const { timeLeft, isRunning, isStopped } = storeToRefs(timeStore);
 
-const sessionStore = useSessionStore();
-const { completedWorkSessions } = storeToRefs(sessionStore);
+const { rounds, completedWorkSessions } = storeToRefs(useSessionStore());
 
 
 function formatTime(seconds: number): string {
@@ -45,76 +40,22 @@ const completeCurrentPhase = () => {
   if (completedWorkSessions.value >= rounds.value) {
     resetDailySessions();
     return;
+  } else {
+    timeStore.nextPhase();
   }
-
-  // completedWorkSessions.value++;
-
-  sessionStore.saveSessionData();
-
-  timeStore.nextPhase();
 }
 
-watch(() => completedWorkSessions.value, (newValue) => {
-  console.log(`completedWorkSessions изменилось: ${newValue}`);
-  sessionStore.saveSessionData();
-});
-
-watch(completedWorkSessions, (newValue) => {
-  console.log(`Сохранение completedWorkSessions: ${newValue}`);
-  sessionStore.saveSessionData();
-});
-
-watch(() => rounds.value, (newValue) => {
-  console.log("Rounds updated in Work.vue:", newValue);
-});
-
-
-onBeforeMount(() => {
-  console.log("Загрузка состояния перед монтированием компонента");
-  // timeStore.loadState();
-  sessionStore.loadSessionData();
-});
+function resetDailySessions() {
+  reset();
+}
 
 onMounted(() => {
-  console.log("Компонент смонтирован");
-  console.log(`Восстановленные значения: isRunning=${isRunning.value}, timeLeft=${timeLeft.value}`);
-
-  // sessionStore.loadSessionData();
-
-  // timeStore.loadState();
-
   if (isRunning.value && timeLeft.value > 0) {
-    console.log("Перезапуск таймера после восстановления состояния");
-
     timeStore.startTimer(timeLeft.value);
   } else if (timeLeft.value <= 0) {
     timeStore.resetTimer();
   }
 });
-
-onUnmounted(() => {
-  console.log("Сохранение состояния перед размонтированием компонента");
-  // timeStore.saveState();
-  sessionStore.saveSessionData();
-  // console.log("Состояние сохранено:", {
-  //   completedWorkSessions: localStorage.getItem('completedWorkSessions'),
-  //   rounds: localStorage.getItem
-  // });
-
-});
-
-function resetDailySessions() {
-  const date = new Date();
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0");
-  const year = date.getFullYear();
-  const currentDate = `${day}.${month}.${year}`;
-
-  // sessionStore.addSessionData(currentDate, completedWorkSessions.value);
-
-  // sessionStore.setCompletedWorkSessions(0);
-  reset();
-}
 </script>
 
 <template>
