@@ -32,14 +32,26 @@ function nextMonth() {
   }
 }
 
-statsStore.addSessionData('2024-08-01', 2, 7);
-statsStore.addSessionData('2024-08-02', 4, 10);
+statsStore.addSessionData('01.08.2024', 2, 7);
+statsStore.addSessionData('02.08.2024', 4, 10);
+
+console.log("All session data:", statsStore.sessionData);
+
 
 const filteredStatsData = computed(() => {
-  console.log("Все sessionData", statsStore.sessionData);
-
   return statsStore.sessionData.filter(data => {
-    const date = new Date(data.date);
+    // const [datePart] = data.date.split(',')[0].split(' ');
+    const [day, month, year] = data.date.split('.').map(Number);
+    const date = new Date(year, month - 1, day);
+
+    console.log("Parsed date:", date);
+
+    if (isNaN(date.getTime())) {
+      console.error(`Invalid date: ${data.date}`);
+      return false;
+    }
+    console.log("Checking date:", date, "against current Month:", currentMonth.value, "and currentYear:", currentYear.value);
+
     return date.getMonth() === currentMonth.value && date.getFullYear() === currentYear.value;
   });
 });

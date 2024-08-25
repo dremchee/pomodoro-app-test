@@ -87,18 +87,20 @@ export const useSettingsStore = defineStore(
   }
 
   function increaseRounds() {
-   const currentDate = new Date().toISOString().split('T')[0];
+   const currentDate = new Date();
+   const formattedDate = currentDate.toLocaleString('ru-RU').split(',')[0];
    if(rounds.value < LIMITS.rounds.max) {
     rounds.value += 1;
-    sessionStore.addSessionData(currentDate, sessionStore.completedWorkSessions, rounds.value, false);
+    sessionStore.addSessionData(formattedDate, sessionStore.completedWorkSessions, rounds.value, false);
    }
   }
 
   function decreaseRounds() {
-   const currentDate = new Date().toISOString().split('T')[0];
+   const currentDate = new Date();
+   const formattedDate = currentDate.toLocaleString('ru-RU').split(',')[0];
    if (rounds.value > sessionStore.completedWorkSessions) {
     rounds.value -= 1;
-    sessionStore.addSessionData(currentDate, sessionStore.completedWorkSessions, rounds.value, false);
+    sessionStore.addSessionData(formattedDate, sessionStore.completedWorkSessions, rounds.value, false);
    }
   }
 

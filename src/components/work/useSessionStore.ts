@@ -10,8 +10,8 @@ export const useSessionStore = defineStore(
   const { rounds } = storeToRefs(useSettingsStore());
 
   const sessionData = ref<Array<{date: string; sessions: number; rounds: number}>>([
-    { date: "2024-08-01", sessions: 2, rounds: 7 },
-    { date: "2024-08-02", sessions: 3, rounds: 10 },
+    { date: "01.08.2024", sessions: 2, rounds: 7 },
+    { date: "02.08.2024", sessions: 3, rounds: 10 },
   ]);
   let completedWorkSessions = ref(0);
 
@@ -46,17 +46,17 @@ export const useSessionStore = defineStore(
   }
 
   const completeCurrentPhase = () => {
-   const currentDate = new Date().toISOString().split('T')[0];
+   const currentDate = new Date();
+   const formattedDate = currentDate.toLocaleString('ru-RU').split(',')[0];
   //  completedWorkSessions.value;
-   addSessionData(currentDate, completedWorkSessions.value + 1, rounds.value);
+   addSessionData(formattedDate, completedWorkSessions.value + 1, rounds.value);
   }
   const setRounds = (newRounds: number) => {
     console.log("Setting new rounds value in useSessionStore:", newRounds);
     
     rounds.value = newRounds;
   }
-
-  
+  localStorage.clear()
   return {
    workTime,
    shortBreakTime,
