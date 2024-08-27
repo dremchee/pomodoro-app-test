@@ -5,6 +5,7 @@ import DirectionLeftIcon from '../../../assets/img/direction-left-icon.svg';
 import DirectionRightIcon from '../../../assets/img/direction-right-icon.svg';
 
 import TwoIconButtonsFromStats from '../../../components/settings/components/ButtonControlFromStats.vue';
+import BarChart from '@/components/stats/BarChartStats.vue';
 
 const statsStore = useStatsStore();
 
@@ -34,13 +35,13 @@ function nextMonth() {
 
 statsStore.addSessionData('01.08.2024', 2, 7);
 statsStore.addSessionData('02.08.2024', 4, 10);
+statsStore.addSessionData('02.09.2024', 4, 10);
 
 console.log("All session data:", statsStore.sessionData);
 
 
 const filteredStatsData = computed(() => {
   return statsStore.sessionData.filter(data => {
-    // const [datePart] = data.date.split(',')[0].split(' ');
     const [day, month, year] = data.date.split('.').map(Number);
     const date = new Date(year, month - 1, day);
 
@@ -72,8 +73,8 @@ const filteredStatsData = computed(() => {
         <DirectionRightIcon />
       </template>
     </TwoIconButtonsFromStats>
-    <div class="stats-graphic-container">
-      <div class="stats-graphic-el" v-for="_ in 31"></div>
+    <div class="bar-chart-container">
+      <BarChart :currentMonth="currentMonth" :currentYear="currentYear" />
     </div>
     <div class="stats-activity-container">
       <div class="stats-activity-el" v-for="item in filteredStatsData" :key="item.date">
@@ -100,24 +101,6 @@ const filteredStatsData = computed(() => {
   white-space: nowrap;
   text-align: center;
   flex-grow: 1;
-}
-
-.stats-graphic-container {
-  display: flex;
-  flex-direction: row;
-  justify-content: flex-start;
-  align-items: center;
-  max-width: 21.25rem;
-  width: 100%;
-  gap: 3.5px;
-  height: 40%;
-  margin: 0 auto;
-}
-
-.stats-graphic-el {
-  width: 0.5rem;
-  height: 11.25rem;
-  background-color: var(--color-light);
 }
 
 .stats-activity-container {

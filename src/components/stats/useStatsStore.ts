@@ -8,6 +8,7 @@ export const useStatsStore = defineStore("stats", () => {
  const sessionData = ref<Array<{date: string, sessions: number, rounds: number}>>([
   { date: "01.08.2024", sessions: 2, rounds: 7},
   { date: "02.08.2024", sessions: 4, rounds: 10 },
+  { date: "02.09.2024", sessions: 4, rounds: 10 },
  ]);
 
  const addSessionData = (date: string, sessions: number, rounds: number) => {

@@ -12,13 +12,10 @@ export const useSessionStore = defineStore(
   const sessionData = ref<Array<{date: string; sessions: number; rounds: number}>>([
     { date: "01.08.2024", sessions: 2, rounds: 7 },
     { date: "02.08.2024", sessions: 3, rounds: 10 },
+    { date: "02.09.2024", sessions: 4, rounds: 10 },
   ]);
   let completedWorkSessions = ref(0);
-
-  if(!Array.isArray(sessionData.value)) {
-    console.error("sessionData is not an array, resetting to an empty array.");
-    sessionData.value = [];
-  }
+  const lastActiveDate = ref<string>("");
 
   const addSessionData = (date: string, session: number, rounds: number, incrementSessions: boolean = true) => {
     console.log("sessionData before update:", JSON.stringify(sessionData.value));
@@ -45,18 +42,28 @@ export const useSessionStore = defineStore(
    
   }
 
+  if(!Array.isArray(sessionData.value)) {
+    sessionData.value = [];
+  }
+
+  const currentDate = new Date();
+  const formattedDate = currentDate.toLocaleString("ru-RU").split(",")[0];
+
+  if (lastActiveDate.value !== formattedDate) {
+    if(lastActiveDate.value) {
+      addSessionData(lastActiveDate.value, completedWorkSessions.value, rounds.value);
+    }
+
+    completedWorkSessions.value = 0;
+    lastActiveDate.value = formattedDate;
+  }
+
   const completeCurrentPhase = () => {
-   const currentDate = new Date();
-   const formattedDate = currentDate.toLocaleString('ru-RU').split(',')[0];
-  //  completedWorkSessions.value;
    addSessionData(formattedDate, completedWorkSessions.value + 1, rounds.value);
   }
   const setRounds = (newRounds: number) => {
-    console.log("Setting new rounds value in useSessionStore:", newRounds);
-    
     rounds.value = newRounds;
   }
-  localStorage.clear()
   return {
    workTime,
    shortBreakTime,
@@ -67,12 +74,13 @@ export const useSessionStore = defineStore(
    addSessionData,
    completeCurrentPhase,
    setRounds,
+   lastActiveDate,
   }
 
 }, {
   persist: [
     {
-      paths: ['sessionData', 'completedWorkSessions', 'rounds'],
+      paths: ['sessionData', 'completedWorkSessions', 'rounds', 'lastActiveDate'],
       storage: window.localStorage,
     }
   ]
