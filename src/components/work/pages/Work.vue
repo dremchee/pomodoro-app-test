@@ -119,8 +119,9 @@ onMounted(() => {
 .work-report-circle-container {
   display: flex;
   flex-direction: row;
+  flex-wrap: wrap;
   justify-content: center;
-  gap: 1.5rem;
+  gap: 0.5rem 1.5rem;
 }
 
 .work-report-circle {

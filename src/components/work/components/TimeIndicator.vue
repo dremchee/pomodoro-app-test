@@ -22,7 +22,6 @@ const circleStyle = ref({
   strokeDashoffset: `${circleLength}`,
   stroke: "var(--color-primary)",
   transition: "none",
-  // filter: `drop-shadow(0 0 15px var(--color-primary))`,
 });
 
 function updateCurrentDate() {
@@ -60,7 +59,6 @@ function updateProgressBar(newTime: string) {
       ? "var(--color-text)"
       : "var(--color-primary)",
     transition: props.isRunning ? `stroke-dashoffset 1s linear` : "none",
-    // filter: `drop-shadow(0 0 15px ${props.isStopped ? "var(--color-text)" : "var(--color-primary)"})`,
   };
 }
 
@@ -96,7 +94,6 @@ watch(
       strokeDashoffset: `${circleLength}`,
       stroke: "var(--color-primary)",
       transition: "none",
-      // filter: `drop-shadow(0 0 15px var(--color-primary))`,
     };
     nextTick(() => {
       updateProgressBar(props.time);
