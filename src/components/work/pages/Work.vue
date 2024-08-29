@@ -7,14 +7,14 @@ import { useTimerStore } from "@/components/work/useTimerStore";
 import RepeatButtonIcon from "../../../assets/img/repeat-button.svg";
 import PlayButtonIcon from "../../../assets/img/play-button.svg";
 import PouseButtonIcon from "../../../assets/img/pouse-button.svg";
-import StopSessionButtonIcon from "../../../assets/img/stop-button.svg";
+import ResetSessionButtonIcon from "../../../assets/img/reset-button.svg";
 
 import TimeIndicator from "../components/TimeIndicator.vue";
 
 const timeStore = useTimerStore();
 
-const { timeLeft, isRunning, isStopped } = storeToRefs(timeStore);
 
+const { timeLeft, isRunning, isStopped, currentPhase } = storeToRefs(timeStore);
 const { rounds, completedWorkSessions } = storeToRefs(useSessionStore());
 
 
@@ -62,7 +62,8 @@ onMounted(() => {
   <div class="container work">
     <div class="work-content">
       <div class="work-timer-container">
-        <TimeIndicator :time="formatTime(timeLeft)" :is-running="isRunning" :is-stopped="isStopped" />
+        <TimeIndicator :time="formatTime(timeLeft)" :is-running="isRunning" :is-stopped="isStopped"
+          :current-phase="currentPhase" />
       </div>
       <div class="work-report-container">
         <div class="work-report-circle-container">
@@ -82,7 +83,7 @@ onMounted(() => {
         <Component :is="isRunning ? PlayButtonIcon : PouseButtonIcon"></Component>
       </button>
       <button class="work-action__button _phase-completion" @click="completeCurrentPhase()">
-        <StopSessionButtonIcon />
+        <ResetSessionButtonIcon />
       </button>
     </div>
   </div>

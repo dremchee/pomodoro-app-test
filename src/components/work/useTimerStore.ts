@@ -1,11 +1,14 @@
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
+import { ref, watch } from 'vue';
 import { SettingsPhase } from '../settings/types';
 import EndSound from '@/components/work/audio/budilnik1.mp3';
 import { useSessionStore } from './useSessionStore';
+import { useSettingsStore } from '@/components/settings/useSettingsStore';
+import Settings from '../settings/pages/Settings.vue';
 
 export const useTimerStore = defineStore('timer', () => {
  const sessionStore = useSessionStore();
+ const settingsStore = useSettingsStore();
  
  const timeLeft = ref(0);
  const intervalId = ref<number | null>(null);
@@ -14,6 +17,19 @@ export const useTimerStore = defineStore('timer', () => {
  const currentPhase = ref<SettingsPhase>(SettingsPhase.WORK);
  const lastSaveTimestamp = ref<number | null>(null);
 
+ const setTimeLeft = () => {
+  switch(currentPhase.value) {
+    case SettingsPhase.WORK:
+     timeLeft.value = settingsStore.workTime;
+     break;
+    case SettingsPhase.SHORT_BREAK:
+      timeLeft.value = settingsStore.shortBreakTime;
+      break;
+    case SettingsPhase.LONG_BREAK:
+      timeLeft.value = settingsStore.longBreakTime;
+      break;
+  }
+ };
 
  const startTimer = (duration: number) => {
   if(sessionStore.completedWorkSessions >= sessionStore.rounds) {
@@ -26,13 +42,15 @@ export const useTimerStore = defineStore('timer', () => {
 
   if(duration) {
    timeLeft.value = duration;
+  } else {
+    setTimeLeft();
   }
   
   isRunning.value = true;
   isStopped.value = false;
 
   intervalId.value = setInterval(() => {
-  timeLeft.value--;
+   timeLeft.value--;
   
    if(timeLeft.value <= 0) {
     clearInterval(intervalId.value!);
@@ -59,7 +77,8 @@ export const useTimerStore = defineStore('timer', () => {
 
  const resetTimer = () => {
   stopTimer();
-  timeLeft.value = getCurrenPhaseTime();
+  setTimeLeft();
+  // timeLeft.value = getCurrenPhaseTime();
  }
 
  const nextPhase = () => {
@@ -70,16 +89,17 @@ export const useTimerStore = defineStore('timer', () => {
   if (currentPhase.value === SettingsPhase.WORK) {
    if (sessionStore.completedWorkSessions % 4 === 0) {
      currentPhase.value = SettingsPhase.LONG_BREAK;
-     timeLeft.value = sessionStore.longBreakTime;
+    //  timeLeft.value = sessionStore.longBreakTime;
    } else {
      currentPhase.value = SettingsPhase.SHORT_BREAK;
-     timeLeft.value = sessionStore.shortBreakTime;
+    //  timeLeft.value = sessionStore.shortBreakTime;
    }
  } else {
    currentPhase.value = SettingsPhase.WORK;
-   timeLeft.value = sessionStore.workTime;
+  //  timeLeft.value = sessionStore.workTime;
  }
  
+ setTimeLeft();
  stopTimer();
 }
 
@@ -95,6 +115,20 @@ export const useTimerStore = defineStore('timer', () => {
     return sessionStore.workTime;
   }
  }
+
+ watch(
+  () => [
+    settingsStore.workTime,
+    settingsStore.shortBreakTime,
+    settingsStore.longBreakTime,
+  ],
+  () => {
+    if(!isRunning.value) {
+      setTimeLeft();
+    }
+  }
+  
+ );
 
  return {
   timeLeft,

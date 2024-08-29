@@ -13,6 +13,7 @@ const props = defineProps<{
   time: string;
   isRunning: boolean;
   isStopped: boolean;
+  currentPhase: string;
 }>();
 
 const circleLength = 1008.45039;
