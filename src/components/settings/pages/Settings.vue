@@ -1,6 +1,8 @@
 <script setup lang="ts">
-import { storeToRefs } from 'pinia'
-import { useSettingsStore } from '../useSettingsStore'
+import { storeToRefs } from 'pinia';
+import { useSettingsStore } from '../useSettingsStore';
+import { computed } from 'vue';
+import { useTimerStore } from '@/components/work/useTimerStore';
 
 import PlusButtonIcon from '@/assets/img/plus-icon.svg'
 import MinusButtonIcon from '@/assets/img/minus-icon.svg'
@@ -18,10 +20,11 @@ const {
   increaseLongBreakTime,
   decreaseLongBreakTime,
   increaseRounds,
-  decreaseRounds
+  decreaseRounds,
 } = useSettingsStore()
 
-const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore())
+const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSettingsStore());
+const canChangeSettings = computed(() => !useTimerStore().isRunning);
 </script>
 
 <template>
@@ -29,7 +32,8 @@ const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSetti
     <div class="setting-parameters-el">
       <SettingsFromGroup title="Work" test="Some text">
         <template #label>Work</template>
-        <TwoIconButtons :timeInSeconds="workTime" @decrease-time="decreaseWorkTime" @increase-time="increaseWorkTime">
+        <TwoIconButtons :timeInSeconds="workTime" @decrease-time="decreaseWorkTime" @increase-time="increaseWorkTime"
+          :class="{ 'disabled-button': !canChangeSettings }">
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
@@ -52,7 +56,7 @@ const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSetti
       <SettingsFromGroup title="Short break" test="Some text">
         <template #label>Short break</template>
         <TwoIconButtons :timeInSeconds="shortBreakTime" @decrease-time="decreaseShortBreakTime"
-          @increase-time="increaseShortBreakTime">
+          @increase-time="increaseShortBreakTime" :class="{ 'disabled-button': !canChangeSettings }">
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
@@ -75,7 +79,7 @@ const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSetti
       <SettingsFromGroup title="Long break" test="Some text">
         <template #label>Long break</template>
         <TwoIconButtons :timeInSeconds="longBreakTime" @decrease-time="decreaseLongBreakTime"
-          @increase-time="increaseLongBreakTime">
+          @increase-time="increaseLongBreakTime" :class="{ 'disabled-button': !canChangeSettings }">
           <template #icon1>
             <MinusButtonIcon></MinusButtonIcon>
           </template>
@@ -132,6 +136,11 @@ const { workTime, shortBreakTime, longBreakTime, rounds } = storeToRefs(useSetti
   flex-direction: column;
   align-items: center;
   justify-content: center;
+}
+
+.disabled-button {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .setting-parameters-el:last-child {

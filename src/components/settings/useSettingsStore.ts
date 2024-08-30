@@ -1,6 +1,7 @@
-import { ref, watch } from "vue";
+import { ref, watch, computed } from "vue";
 import { defineStore } from "pinia";
 import { useSessionStore } from "../work/useSessionStore";
+import { useTimerStore } from '@/components/work/useTimerStore';
 
 const LIMITS = {
  workTime: {
@@ -35,6 +36,11 @@ export const useSettingsStore = defineStore(
 
   const sessionStore = useSessionStore();
 
+  const canChangeSettings = computed(() => {
+   return !useTimerStore().isRunning;
+  });
+
+
   // /**
   //  *
   //  * @param type
@@ -45,13 +51,13 @@ export const useSettingsStore = defineStore(
   // }
 
   function increaseWorkTime() {
-   if (workTime.value < LIMITS.workTime.max) {
+   if (canChangeSettings && workTime.value < LIMITS.workTime.max) {
     workTime.value += LIMITS.workTime.step;
    }
   }
 
   function decreaseWorkTime() {
-   if (workTime.value >= LIMITS.workTime.min) {
+   if (canChangeSettings && workTime.value >= LIMITS.workTime.min) {
     workTime.value -= LIMITS.workTime.step;
    } else {
     workTime.value = 0;
@@ -59,13 +65,13 @@ export const useSettingsStore = defineStore(
   }
 
   function increaseShortBreakTime() {
-   if (shortBreakTime.value < LIMITS.shortBreakTime.max) {
+   if (canChangeSettings && shortBreakTime.value < LIMITS.shortBreakTime.max) {
     shortBreakTime.value += LIMITS.shortBreakTime.step;
    }
   }
 
   function decreaseShortBreakTime() {
-   if (shortBreakTime.value >= LIMITS.shortBreakTime.min) {
+   if (canChangeSettings && shortBreakTime.value >= LIMITS.shortBreakTime.min) {
     shortBreakTime.value -= LIMITS.shortBreakTime.step;
    } else {
     shortBreakTime.value = 0;
@@ -73,13 +79,13 @@ export const useSettingsStore = defineStore(
   }
 
   function increaseLongBreakTime() {
-   if (longBreakTime.value < LIMITS.longBreakTime.max) {
+   if (canChangeSettings && longBreakTime.value < LIMITS.longBreakTime.max) {
     longBreakTime.value += LIMITS.longBreakTime.step;
    }
   }
 
   function decreaseLongBreakTime() {
-   if (longBreakTime.value >= LIMITS.longBreakTime.min) {
+   if (canChangeSettings && longBreakTime.value >= LIMITS.longBreakTime.min) {
     longBreakTime.value -= LIMITS.longBreakTime.step;
    } else {
     longBreakTime.value = 0;
@@ -116,6 +122,7 @@ export const useSettingsStore = defineStore(
    shortBreakTime,
    longBreakTime,
    rounds,
+   canChangeSettings,
    // Metods
    increaseWorkTime,
    decreaseWorkTime,

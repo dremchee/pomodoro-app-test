@@ -64,6 +64,7 @@ export const useSessionStore = defineStore(
   const setRounds = (newRounds: number) => {
     rounds.value = newRounds;
   }
+
   return {
    workTime,
    shortBreakTime,
@@ -76,7 +77,7 @@ export const useSessionStore = defineStore(
    setRounds,
    lastActiveDate,
   }
-
+ 
 }, {
   persist: [
     {
