@@ -25,6 +25,8 @@ const circleStyle = ref({
   transition: "none",
 });
 
+const hasWorkedToday = ref(false);
+
 function updateCurrentDate() {
   const now = new Date();
   const day = String(now.getDate()).padStart(2, "0");
@@ -53,6 +55,10 @@ function updateProgressBar(newTime: string) {
   const progress = timeLeftValue / totalTime;
   const dashOffset = circleLength * progress;
 
+  if (progress < 1) {
+    hasWorkedToday.value = true;
+  }
+
   circleStyle.value = {
     strokeDasharray: `${circleLength}`,
     strokeDashoffset: dashOffset.toString(),
@@ -66,6 +72,7 @@ function updateProgressBar(newTime: string) {
 onMounted(() => {
   updateCurrentDate();
   updateProgressBar(props.time);
+  // useTimerStore().resetTimerPhase();
 });
 
 watch(
@@ -110,7 +117,7 @@ watch(
         <path class="circle-bg" d="M165 4.5 
           a 160.5 160.5 0 0 1 0 321 
           a 160.5 160.5 0 0 1 0 -321" />
-        <path :style="circleStyle" class="circle" d="M165 4.5 
+        <path v-if="hasWorkedToday" :style="circleStyle" class="circle" d="M165 4.5 
           a 160.5 160.5 0 0 1 0 321 
           a 160.5 160.5 0 0 1 0 -321" />
       </svg>

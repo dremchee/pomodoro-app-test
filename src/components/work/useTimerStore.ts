@@ -15,7 +15,6 @@ export const useTimerStore = defineStore('timer', () => {
  const isRunning = ref<boolean>(false);
  const isStopped = ref<boolean>(false);
  const currentPhase = ref<SettingsPhase>(SettingsPhase.WORK);
- const lastSaveTimestamp = ref<number | null>(null);
 
  const setTimeLeft = () => {
   switch(currentPhase.value) {
@@ -28,10 +27,14 @@ export const useTimerStore = defineStore('timer', () => {
     case SettingsPhase.LONG_BREAK:
       timeLeft.value = settingsStore.longBreakTime;
       break;
+    default:
+      timeLeft.value = settingsStore.workTime;
   }
  };
 
  const startTimer = (duration: number) => {
+  sessionStore.checkDateChange();
+
   if(sessionStore.completedWorkSessions >= sessionStore.rounds) {
     return;
   }
@@ -45,7 +48,7 @@ export const useTimerStore = defineStore('timer', () => {
   } else {
     setTimeLeft();
   }
-  
+   
   isRunning.value = true;
   isStopped.value = false;
 
@@ -60,8 +63,6 @@ export const useTimerStore = defineStore('timer', () => {
     nextPhase();
    } 
   }, 1000) as unknown as number;
-
-  lastSaveTimestamp.value = Date.now();
  };
 
  const stopTimer = () => {
@@ -71,14 +72,13 @@ export const useTimerStore = defineStore('timer', () => {
   }
   isRunning.value = false;
   isStopped.value = true;
-
-  lastSaveTimestamp.value = Date.now();
  }
 
  const resetTimer = () => {
   stopTimer();
   setTimeLeft();
-  // timeLeft.value = getCurrenPhaseTime();
+  isRunning.value = false;
+  isStopped.value = true;
  }
 
  const nextPhase = () => {
@@ -89,34 +89,27 @@ export const useTimerStore = defineStore('timer', () => {
   if (currentPhase.value === SettingsPhase.WORK) {
    if (sessionStore.completedWorkSessions % 4 === 0) {
      currentPhase.value = SettingsPhase.LONG_BREAK;
-    //  timeLeft.value = sessionStore.longBreakTime;
    } else {
      currentPhase.value = SettingsPhase.SHORT_BREAK;
-    //  timeLeft.value = sessionStore.shortBreakTime;
    }
  } else {
    currentPhase.value = SettingsPhase.WORK;
-  //  timeLeft.value = sessionStore.workTime;
  }
  
  setTimeLeft();
  stopTimer();
 }
 
- const getCurrenPhaseTime = () => {
-  switch (currentPhase.value) {
-   case SettingsPhase.WORK:
-    return sessionStore.workTime;
-   case SettingsPhase.SHORT_BREAK:
-    return sessionStore.shortBreakTime;
-   case SettingsPhase.LONG_BREAK:
-    return sessionStore.longBreakTime;
-   default:
-    return sessionStore.workTime;
-  }
- }
+const resetTimerPhase = () => {
+  console.log('Phase reset to WORK with time set to:', timeLeft.value);
+  // stopTimer();
+  currentPhase.value = SettingsPhase.WORK;
+  setTimeLeft();
+  isRunning.value = false;
+  isStopped.value = true;
+}
 
- watch(
+watch(
   () => [
     settingsStore.workTime,
     settingsStore.shortBreakTime,
@@ -140,6 +133,7 @@ export const useTimerStore = defineStore('timer', () => {
   stopTimer,
   resetTimer,
   nextPhase,
+  resetTimerPhase,
  };
 }, {
   persist: true,

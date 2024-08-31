@@ -50,7 +50,12 @@ function resetDailySessions() {
 }
 
 onMounted(() => {
-  if (isRunning.value && timeLeft.value > 0) {
+  useSessionStore().checkDateChange();
+  console.log('Phase reset to WORK with time set to:', timeLeft.value);
+
+  if (useSessionStore().lastActiveDate !== new Date().toLocaleString("ru-RU").split(",")[0]) {
+    timeStore.resetTimer();
+  } else if (isRunning.value && timeLeft.value > 0) {
     timeStore.startTimer(timeLeft.value);
   } else if (timeLeft.value <= 0) {
     timeStore.resetTimer();

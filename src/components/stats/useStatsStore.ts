@@ -26,14 +26,11 @@ export const useStatsStore = defineStore("stats", () => {
  watchEffect ( () => {
   console.log(`rounds изменилось на ${rounds.value}`);
 
-  const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleString('ru-RU').split(',')[0];
-  const existingData = sessionData.value.find(data => data.date === formattedDate);
+  const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
+  const existingData = sessionData.value.find(data => data.date === currentDate);
 
-  if(existingData) {
-    existingData.rounds = rounds.value;
-  } else {
-    sessionData.value.push({date: formattedDate, sessions: 0, rounds: rounds.value});
+  if(!existingData) {
+    sessionData.value.push({date: currentDate, sessions: 0, rounds: rounds.value});
   }
 
   console.log("sessionData after rounds update: ", sessionData.value);

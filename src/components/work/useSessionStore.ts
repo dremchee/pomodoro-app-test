@@ -1,7 +1,9 @@
 import { defineStore, storeToRefs } from "pinia";
-import { ref } from "vue";
+import { onMounted, ref } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useStatsStore } from "@/components/stats/useStatsStore";
+import { useTimerStore } from "@/components/work/useTimerStore";
+import { SettingsPhase } from "@/components/settings/types";
 
 export const useSessionStore = defineStore(
  "session",
@@ -24,7 +26,7 @@ export const useSessionStore = defineStore(
    const existingSession = sessionData.value.find(session => session.date === date);
 
    if(existingSession) {
-    if(incrementSessions){
+    if(incrementSessions) {
       completedWorkSessions.value += session - existingSession.sessions;
       existingSession.sessions = session;
     }
@@ -46,25 +48,38 @@ export const useSessionStore = defineStore(
     sessionData.value = [];
   }
 
-  const currentDate = new Date();
-  const formattedDate = currentDate.toLocaleString("ru-RU").split(",")[0];
+  const checkDateChange = () => {
+    const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
+    if(lastActiveDate.value !== currentDate) {
+      if(lastActiveDate.value) {
+        addSessionData(lastActiveDate.value, completedWorkSessions.value, rounds.value);
+      }
 
-  if (lastActiveDate.value !== formattedDate) {
-    if(lastActiveDate.value) {
-      addSessionData(lastActiveDate.value, completedWorkSessions.value, rounds.value);
+      completedWorkSessions.value = 0;
+      lastActiveDate.value = currentDate;
+
+      // resetTimerPhase();
+      useTimerStore().resetTimer();
     }
+  };
 
-    completedWorkSessions.value = 0;
-    lastActiveDate.value = formattedDate;
-  }
+  onMounted(() => {
+    checkDateChange();
+  });
 
   const completeCurrentPhase = () => {
-   addSessionData(formattedDate, completedWorkSessions.value + 1, rounds.value);
+    checkDateChange();
+    addSessionData(lastActiveDate.value, completedWorkSessions.value + 1, rounds.value);
   }
   const setRounds = (newRounds: number) => {
     rounds.value = newRounds;
   }
+  const resetTimerPhase = () => {
+    useTimerStore().resetTimer();
+    useTimerStore().currentPhase = SettingsPhase.WORK;
+  }
 
+//  localStorage.clear();
   return {
    workTime,
    shortBreakTime,
@@ -76,6 +91,8 @@ export const useSessionStore = defineStore(
    completeCurrentPhase,
    setRounds,
    lastActiveDate,
+   checkDateChange,
+   resetTimerPhase,
   }
  
 }, {
