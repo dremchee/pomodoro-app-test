@@ -72,7 +72,6 @@ function updateProgressBar(newTime: string) {
 onMounted(() => {
   updateCurrentDate();
   updateProgressBar(props.time);
-  // useTimerStore().resetTimerPhase();
 });
 
 watch(

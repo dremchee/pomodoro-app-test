@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed, watch } from 'vue';
+import { ref, computed } from 'vue';
 import { Bar } from 'vue-chartjs';
 import { Chart as ChartJS, Title, Tooltip, Legend, BarElement, CategoryScale, LinearScale } from 'chart.js';
 import { useStatsStore } from '@/components/stats/useStatsStore';
@@ -12,12 +12,6 @@ const props = defineProps<{
 }>();
 
 const statsStore = useStatsStore();
-
-// const currentDate = new Date();
-// const currentMonth = currentDate.getMonth();
-// const currentYear = currentDate.getFullYear();
-
-// const daysInMonth = new Date(currentYear, currentMonth + 1, 0).getDate();
 
 const chartData = computed(() => {
  const daysInMonth = new Date(props.currentYear, props.currentMonth + 1, 0).getDate();

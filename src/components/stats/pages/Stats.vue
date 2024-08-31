@@ -35,23 +35,16 @@ function nextMonth() {
 
 statsStore.addSessionData('01.08.2024', 2, 7);
 statsStore.addSessionData('02.08.2024', 4, 10);
-statsStore.addSessionData('02.09.2024', 4, 10);
-
-console.log("All session data:", statsStore.sessionData);
-
 
 const filteredStatsData = computed(() => {
   return statsStore.sessionData.filter(data => {
     const [day, month, year] = data.date.split('.').map(Number);
     const date = new Date(year, month - 1, day);
 
-    console.log("Parsed date:", date);
-
     if (isNaN(date.getTime())) {
       console.error(`Invalid date: ${data.date}`);
       return false;
     }
-    console.log("Checking date:", date, "against current Month:", currentMonth.value, "and currentYear:", currentYear.value);
 
     return date.getMonth() === currentMonth.value && date.getFullYear() === currentYear.value;
   });
@@ -119,7 +112,6 @@ const filteredStatsData = computed(() => {
   flex-direction: row;
   justify-content: space-between;
   align-items: center;
-  /* height: 50px; */
   border-bottom: 1px solid var(--color-light);
   padding: 10px 15px;
 }
@@ -137,7 +129,6 @@ const filteredStatsData = computed(() => {
   gap: 0.75rem;
   row-gap: 3px;
   max-width: 50%;
-  /* min-height: 50px; */
 }
 
 .stats-activity-el-circle {

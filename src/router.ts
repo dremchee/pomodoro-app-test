@@ -1,5 +1,4 @@
 import { createRouter, createWebHistory } from "vue-router";
-import { useSessionStore } from "@/components/work/useSessionStore";
 import { useTimerStore } from "@/components/work/useTimerStore";
 
 const routes = [

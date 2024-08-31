@@ -111,8 +111,6 @@ export const useSettingsStore = defineStore(
   }
 
   watch(rounds, (newRounds) => {
-   console.log('New rounds value in useSettingsStore:', newRounds);
-   
    sessionStore.setRounds(newRounds);
   }), {deep: true};
 

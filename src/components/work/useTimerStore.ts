@@ -4,7 +4,6 @@ import { SettingsPhase } from '../settings/types';
 import EndSound from '@/components/work/audio/budilnik1.mp3';
 import { useSessionStore } from './useSessionStore';
 import { useSettingsStore } from '@/components/settings/useSettingsStore';
-import Settings from '../settings/pages/Settings.vue';
 
 export const useTimerStore = defineStore('timer', () => {
  const sessionStore = useSessionStore();
@@ -101,8 +100,6 @@ export const useTimerStore = defineStore('timer', () => {
 }
 
 const resetTimerPhase = () => {
-  console.log('Phase reset to WORK with time set to:', timeLeft.value);
-  // stopTimer();
   currentPhase.value = SettingsPhase.WORK;
   setTimeLeft();
   isRunning.value = false;

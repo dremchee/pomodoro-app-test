@@ -51,7 +51,6 @@ function resetDailySessions() {
 
 onMounted(() => {
   useSessionStore().checkDateChange();
-  console.log('Phase reset to WORK with time set to:', timeLeft.value);
 
   if (useSessionStore().lastActiveDate !== new Date().toLocaleString("ru-RU").split(",")[0]) {
     timeStore.resetTimer();
