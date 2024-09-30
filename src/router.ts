@@ -11,7 +11,7 @@ const routes = [
   meta: { title: "Pomodoro" },
   beforeEnter: () => {
    const timerStore = useTimerStore();
-   if(useSessionStore().lastActiveDate !== checkDataNewDay().value) {
+   if(useSessionStore().lastActiveDate !== checkDataNewDay()) {
     useSessionStore().checkDateChange();
    }
    // checkDataNewDay();
