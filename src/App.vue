@@ -1,5 +1,24 @@
 <script setup lang="ts">
 import Navigation from '@/components/havigation/Navigation.vue'
+import { useSessionStore } from '@/components/work/useSessionStore';
+import { onMounted, onUnmounted } from 'vue';
+import { checkDataNewDay } from './dataChecker';
+
+let intervalId: number | null = null;
+
+onMounted(() => {
+ useSessionStore().checkDateChange();
+
+ intervalId = window.setInterval(() => {
+  useSessionStore().checkDateChange();
+ }, 5000);
+});
+
+onUnmounted(() => {
+ if (intervalId) {
+  clearInterval(intervalId);
+ }
+});
 </script>
 
 <template>

@@ -1,14 +1,16 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { useSessionStore } from '../work/useSessionStore';
+import { useTimerStore } from '../work/useTimerStore';
 import HouseButtonIcon from '../../assets/img/house-button.svg';
 import StattisticsButtonIcon from '../../assets/img/statistics-button.svg';
 import CustomisationButtonIcon from '../../assets/img/customisation-button.svg';
 
 const sessionStore = useSessionStore();
+const timerStore = useTimerStore();
 
 const homeRoute = computed(() => {
- return sessionStore.sessionStartedToday ? '/work' : '/';
+ return sessionStore.clickBatton && sessionStore.lastActiveDate === new Date().toLocaleString("ru-RU").split(",")[0] || timerStore.isRunning ? '/work' : '/';
 });
 
 </script>

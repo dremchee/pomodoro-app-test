@@ -1,9 +1,11 @@
 import { defineStore, storeToRefs } from "pinia";
-import { onMounted, ref } from "vue";
+import { nextTick, onMounted, ref, watch, watchEffect } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useStatsStore } from "@/components/stats/useStatsStore";
 import { useTimerStore } from "@/components/work/useTimerStore";
 import { SettingsPhase } from "@/components/settings/types";
+import { checkDataNewDay } from "@/dataChecker";
+import router from "@/router";
 
 export const useSessionStore = defineStore(
  "session",
@@ -16,7 +18,30 @@ export const useSessionStore = defineStore(
     { date: "02.08.2024", sessions: 3, rounds: 10 },
   ]);
   let completedWorkSessions = ref(0);
-  const lastActiveDate = ref<string>("");
+  const lastActiveDate = ref<string>(new Date().toLocaleString("ru-RU").split(",")[0]);
+  const currentDate = checkDataNewDay();
+  const clickBatton = ref(false);
+
+  // onMounted(() => {
+  //   checkDataNewDay();
+  // });
+
+  const checkDateChange = () => {
+    // const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
+    if(lastActiveDate.value !== currentDate) {
+      if(lastActiveDate.value) {
+        addSessionData(lastActiveDate.value, completedWorkSessions.value, rounds.value);
+      }
+
+      completedWorkSessions.value = 0;
+      lastActiveDate.value = currentDate;
+
+      useTimerStore().resetTimer();
+      useTimerStore().resetTimerPhase();
+
+      router.push('/');
+    }
+  };
 
   const addSessionData = (date: string, session: number, rounds: number, incrementSessions: boolean = true) => {
    const existingSession = sessionData.value.find(session => session.date === date);
@@ -29,7 +54,9 @@ export const useSessionStore = defineStore(
     existingSession.rounds = rounds;
    } else {
     sessionData.value.push({date, sessions: session, rounds});
-    completedWorkSessions.value += session;
+    if(incrementSessions) {
+      completedWorkSessions.value += session;
+    }
    }
 
    useStatsStore().addSessionData(date, completedWorkSessions.value, rounds);
@@ -40,26 +67,15 @@ export const useSessionStore = defineStore(
     sessionData.value = [];
   }
 
-  const checkDateChange = () => {
-    const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
-    if(lastActiveDate.value !== currentDate) {
-      if(lastActiveDate.value) {
-        addSessionData(lastActiveDate.value, completedWorkSessions.value, rounds.value);
-      }
+  
 
-      completedWorkSessions.value = 0;
-      lastActiveDate.value = currentDate;
-
-      useTimerStore().resetTimer();
-    }
-  };
-
-  onMounted(() => {
-    checkDateChange();
-  });
+  // onMounted(() => {
+  //   checkDataNewDay();
+  //   checkDateChange();
+  // });
 
   const completeCurrentPhase = () => {
-    checkDateChange();
+    checkDataNewDay();
     addSessionData(lastActiveDate.value, completedWorkSessions.value + 1, rounds.value);
   }
   const setRounds = (newRounds: number) => {
@@ -70,6 +86,10 @@ export const useSessionStore = defineStore(
     useTimerStore().currentPhase = SettingsPhase.WORK;
   }
 
+  const setClickButton = (value: boolean) => {
+    clickBatton.value = value;
+  }
+
   return {
    workTime,
    shortBreakTime,
@@ -77,10 +97,12 @@ export const useSessionStore = defineStore(
    rounds,
    sessionData,
    completedWorkSessions,
+   lastActiveDate,
+   clickBatton,
+   setClickButton,
    addSessionData,
    completeCurrentPhase,
    setRounds,
-   lastActiveDate,
    checkDateChange,
    resetTimerPhase,
   }
@@ -88,8 +110,8 @@ export const useSessionStore = defineStore(
 }, {
   persist: [
     {
-      paths: ['sessionData', 'completedWorkSessions', 'rounds', 'lastActiveDate'],
+      paths: ['sessionData', 'rounds', 'lastActiveDate', 'completedWorkSessions'],
       storage: window.localStorage,
-    }
+    },
   ]
 });

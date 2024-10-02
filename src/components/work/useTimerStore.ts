@@ -4,6 +4,7 @@ import { SettingsPhase } from '../settings/types';
 import EndSound from '@/components/work/audio/budilnik1.mp3';
 import { useSessionStore } from './useSessionStore';
 import { useSettingsStore } from '@/components/settings/useSettingsStore';
+import { checkDataNewDay } from '@/dataChecker';
 
 export const useTimerStore = defineStore('timer', () => {
  const sessionStore = useSessionStore();
@@ -33,6 +34,7 @@ export const useTimerStore = defineStore('timer', () => {
 
  const startTimer = (duration: number) => {
   sessionStore.checkDateChange();
+  // checkDataNewDay();
 
   if(sessionStore.completedWorkSessions >= sessionStore.rounds) {
     return;
@@ -77,8 +79,15 @@ export const useTimerStore = defineStore('timer', () => {
   stopTimer();
   setTimeLeft();
   isRunning.value = false;
+  // timeLeft.value = 0;
   isStopped.value = true;
  }
+
+ sessionStore.$subscribe((mutation, state) => {
+  if(state.lastActiveDate !== new Date().toLocaleString("ru-RU").split(",")[0]) {
+    resetTimer();
+  }
+ })
 
  const nextPhase = () => {
   if(currentPhase.value === SettingsPhase.WORK) {
@@ -133,6 +142,11 @@ watch(
   resetTimerPhase,
  };
 }, {
-  persist: true,
+  persist: [
+    {
+      paths: ['isRunning', 'isStopped', 'timeLeft','currentPhase'],
+      storage: window.sessionStorage,
+    }
+  ]
 });
 

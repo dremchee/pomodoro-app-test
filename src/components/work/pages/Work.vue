@@ -10,6 +10,7 @@ import PouseButtonIcon from "../../../assets/img/pouse-button.svg";
 import ResetSessionButtonIcon from "../../../assets/img/reset-button.svg";
 
 import TimeIndicator from "../components/TimeIndicator.vue";
+import { checkDataNewDay } from "@/dataChecker";
 
 const timeStore = useTimerStore();
 
@@ -23,6 +24,19 @@ function formatTime(seconds: number): string {
   const sec = String(seconds % 60).padStart(2, "0");
   return `${minutes}:${sec}`;
 }
+
+onMounted(() => {
+  useSessionStore().checkDateChange();
+  // checkDataNewDay();
+
+  if (useSessionStore().lastActiveDate !== new Date().toLocaleString("ru-RU").split(",")[0]) {
+    timeStore.resetTimer();
+  } else if (isRunning.value && timeLeft.value > 0) {
+    timeStore.startTimer(timeLeft.value);
+  } else if (timeLeft.value <= 0) {
+    timeStore.resetTimer();
+  }
+});
 
 const startTimer = () => {
   if (timeStore.isRunning) {
@@ -49,17 +63,6 @@ function resetDailySessions() {
   reset();
 }
 
-onMounted(() => {
-  useSessionStore().checkDateChange();
-
-  if (useSessionStore().lastActiveDate !== new Date().toLocaleString("ru-RU").split(",")[0]) {
-    timeStore.resetTimer();
-  } else if (isRunning.value && timeLeft.value > 0) {
-    timeStore.startTimer(timeLeft.value);
-  } else if (timeLeft.value <= 0) {
-    timeStore.resetTimer();
-  }
-});
 </script>
 
 <template>

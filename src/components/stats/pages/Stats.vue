@@ -38,6 +38,10 @@ statsStore.addSessionData('02.08.2024', 4, 10);
 
 const filteredStatsData = computed(() => {
   return statsStore.sessionData.filter(data => {
+    if (!data.date) {
+      return;
+    }
+
     const [day, month, year] = data.date.split('.').map(Number);
     const date = new Date(year, month - 1, day);
 

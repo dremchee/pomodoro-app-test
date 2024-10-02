@@ -3,6 +3,7 @@ import { ref, onMounted, defineProps, watch, nextTick } from "vue";
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
 import { useTimerStore } from "@/components/work/useTimerStore";
 import { storeToRefs } from "pinia";
+import { checkDataNewDay } from "@/dataChecker";
 
 const { workTime, shortBreakTime, longBreakTime } = storeToRefs(
   useSettingsStore()
@@ -28,11 +29,12 @@ const circleStyle = ref({
 const hasWorkedToday = ref(false);
 
 function updateCurrentDate() {
-  const now = new Date();
-  const day = String(now.getDate()).padStart(2, "0");
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const year = now.getFullYear();
-  return `${day}.${month}.${year}`;
+  return checkDataNewDay();
+  // const now = new Date();
+  // const day = String(now.getDate()).padStart(2, "0");
+  // const month = String(now.getMonth() + 1).padStart(2, "0");
+  // const year = now.getFullYear();
+  // return `${day}.${month}.${year}`;
 }
 
 function getTotalTime(): number {

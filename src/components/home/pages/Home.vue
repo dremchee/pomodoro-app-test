@@ -3,27 +3,30 @@ import { useSessionStore } from '../../work/useSessionStore';
 import Button from '../../shared/Button.vue';
 import PlayIcon from '../../../assets/img/play.svg';
 import { useRouter } from 'vue-router';
+import { ref } from 'vue';
 import { onMounted } from 'vue';
+import { checkDataNewDay } from '@/dataChecker';
 
 const sessionStore = useSessionStore()
+const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
+const router = useRouter();
 
-const router = useRouter()
+// const clickButton = ref(false);
 
 const routeToSession = () => {
-  const today = new Date().toLocaleDateString();
-  sessionStore.currentDate = today;
-  sessionStore.sessionStartedToday = true;
-  sessionStore.isRunning = true
-  router.push('/work')
+  sessionStore.setClickButton(true);
+  sessionStore.checkDateChange();
+  router.push('/work');
+  // if (sessionStore.lastActiveDate !== currentDate) {
+  //   router.push('/');
+  // } else {
+  //   router.push('/work');
+  // }
 }
 
-onMounted(() => {
-  const today = new Date().toDateString();
-  if (sessionStore.sessionStartedToday && sessionStore.currentDate !== today) {
-    sessionStore.sessionStartedToday = false;
-    sessionStore.currentDate = today;
-  }
-});
+// onMounted(() => {
+//    checkDataNewDay();
+// });
 </script>
 
 <template>

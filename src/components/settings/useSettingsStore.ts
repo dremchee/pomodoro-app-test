@@ -104,7 +104,7 @@ export const useSettingsStore = defineStore(
   function decreaseRounds() {
    const currentDate = new Date();
    const formattedDate = currentDate.toLocaleString('ru-RU').split(',')[0];
-   if (rounds.value > sessionStore.completedWorkSessions) {
+   if (rounds.value > sessionStore.completedWorkSessions && rounds.value > LIMITS.rounds.min) {
     rounds.value -= 1;
     sessionStore.addSessionData(formattedDate, sessionStore.completedWorkSessions, rounds.value, false);
    }

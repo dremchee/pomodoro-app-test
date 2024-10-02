@@ -1,9 +1,11 @@
 import { defineStore, storeToRefs } from "pinia";
 import { ref, watchEffect } from 'vue';
 import { useSettingsStore } from "@/components/settings/useSettingsStore";
+import { checkDataNewDay } from "@/dataChecker";
 
 export const useStatsStore = defineStore("stats", () => {
  const { rounds } = storeToRefs(useSettingsStore());
+ const currentDate = checkDataNewDay();
 
  const sessionData = ref<Array<{date: string, sessions: number, rounds: number}>>([
   { date: "01.08.2024", sessions: 2, rounds: 7},
@@ -21,11 +23,12 @@ export const useStatsStore = defineStore("stats", () => {
  };
 
  watchEffect ( () => {
-  const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
+  // const currentDate = new Date().toLocaleString("ru-RU").split(",")[0];
   const existingData = sessionData.value.find(data => data.date === currentDate);
 
   if(!existingData) {
     sessionData.value.push({date: currentDate, sessions: 0, rounds: rounds.value});
+    // checkDataNewDay();
   }
  });
 
